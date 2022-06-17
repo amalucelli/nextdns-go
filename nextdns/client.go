@@ -17,6 +17,7 @@ const (
 	contentType = "application/json"
 )
 
+// Client represents a NextDNS client.
 type Client struct {
 	client  *http.Client
 	baseURL *url.URL
@@ -24,8 +25,10 @@ type Client struct {
 	Profiles ProfilesService
 }
 
+// ClientOption is a function that can be used to customize the client.
 type ClientOption func(c *Client) error
 
+// WithBaseURL sets the base URL of the NextDNS API.
 func WithBaseURL(baseURL string) ClientOption {
 	return func(c *Client) error {
 		parsedURL, err := url.Parse(baseURL)
@@ -38,6 +41,7 @@ func WithBaseURL(baseURL string) ClientOption {
 	}
 }
 
+// WithAPIKey sets the API key to be used for requests.
 func WithAPIKey(apiKey string) ClientOption {
 	return func(c *Client) error {
 		if apiKey == "" {
@@ -54,6 +58,7 @@ func WithAPIKey(apiKey string) ClientOption {
 	}
 }
 
+// WithHTTPClient sets a custom HTTP client that can be used for requests.
 func WithHTTPClient(client *http.Client) ClientOption {
 	return func(c *Client) error {
 		if client == nil {
@@ -65,6 +70,7 @@ func WithHTTPClient(client *http.Client) ClientOption {
 	}
 }
 
+// New instantiates a new NextDNS client.
 func New(opts ...ClientOption) (*Client, error) {
 	baseURL, err := url.Parse(baseURL)
 	if err != nil {
@@ -88,6 +94,7 @@ func New(opts ...ClientOption) (*Client, error) {
 	return c, nil
 }
 
+// do executes an HTTP request and decodes the response into v.
 func (c *Client) do(ctx context.Context, req *http.Request, v interface{}) error {
 	req = req.WithContext(ctx)
 	res, err := c.client.Do(req)
@@ -99,21 +106,27 @@ func (c *Client) do(ctx context.Context, req *http.Request, v interface{}) error
 	return c.handleResponse(ctx, res, v)
 }
 
+// handleResponse handles the response from the NextDNS API and decodes the response into v if provided.
+// The goal is to handle the common errors that can occur when making a request to the NextDNS API,
+// and also provide custom error responses for the client.
 func (c *Client) handleResponse(ctx context.Context, res *http.Response, v interface{}) error {
 	out, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
 
+	// If there is no response body, then we don't need to do anything.
 	if res.StatusCode == http.StatusNoContent {
 		return nil
 	}
 
+	// Sets some default additional informations that can be used by the client to debug the error.
 	meta := map[string]string{
 		"body":        string(out),
 		"http_status": http.StatusText(res.StatusCode),
 	}
 
+	// If the response is not a 200, then we need to handle the error.
 	if res.StatusCode >= http.StatusBadRequest {
 		if res.StatusCode >= http.StatusInternalServerError {
 			return &Error{
@@ -124,6 +137,8 @@ func (c *Client) handleResponse(ctx context.Context, res *http.Response, v inter
 			}
 		}
 
+		// Tries to handle the error response body from the NextDNS API,
+		// encapsulated in a client error.
 		errorRes := &ErrorResponse{}
 		err = json.Unmarshal(out, errorRes)
 		if err != nil {
@@ -140,6 +155,7 @@ func (c *Client) handleResponse(ctx context.Context, res *http.Response, v inter
 			return err
 		}
 
+		// Sets custom error messages for the client based on the HTTP status code.
 		var errType ErrorType
 
 		switch res.StatusCode {
@@ -151,6 +167,7 @@ func (c *Client) handleResponse(ctx context.Context, res *http.Response, v inter
 			errType = ErrorTypeRequest
 		}
 
+		// Returns the error response from the NextDNS API encapsulated in a client error.
 		return &Error{
 			Type:    errType,
 			Message: errResponseError,
@@ -159,10 +176,12 @@ func (c *Client) handleResponse(ctx context.Context, res *http.Response, v inter
 		}
 	}
 
+	// Returns if there is no object to decode.
 	if v == nil {
 		return nil
 	}
 
+	// Decodes the response body into the provided object.
 	err = json.Unmarshal(out, &v)
 	if err != nil {
 		var jsonErr *json.SyntaxError
@@ -181,6 +200,7 @@ func (c *Client) handleResponse(ctx context.Context, res *http.Response, v inter
 	return nil
 }
 
+// newRequest creates a new HTTP request.
 func (c *Client) newRequest(method string, path string, body interface{}) (*http.Request, error) {
 	u, err := c.baseURL.Parse(path)
 	if err != nil {
@@ -215,11 +235,13 @@ func (c *Client) newRequest(method string, path string, body interface{}) (*http
 	return req, nil
 }
 
+// authHeader represents a RoundTripper that adds an authorization header to the request.
 type authTransport struct {
 	rt     http.RoundTripper
 	apiKey string
 }
 
+// RoundTrip adds the authorization header to requests.
 func (t *authTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	req.Header.Add("X-Api-Key", t.apiKey)
 	return t.rt.RoundTrip(req)

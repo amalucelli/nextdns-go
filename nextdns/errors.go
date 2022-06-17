@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// ErrorType defines the code of an error.
 type ErrorType string
 
 const (
@@ -16,14 +17,14 @@ const (
 )
 
 const (
-	ErrorTypeServiceError   ErrorType = "service_error"
-	ErrorTypeRequest        ErrorType = "request"
-	ErrorTypeMalformed      ErrorType = "malformed"
-	ErrorTypeAuthentication ErrorType = "authentication"
-	ErrorTypeNotFound       ErrorType = "not_found"
+	ErrorTypeServiceError   ErrorType = "service_error"  // Internal service error.
+	ErrorTypeRequest        ErrorType = "request"        // Regular request error.
+	ErrorTypeMalformed      ErrorType = "malformed"      // Response body is malformed.
+	ErrorTypeAuthentication ErrorType = "authentication" // Authentication error.
+	ErrorTypeNotFound       ErrorType = "not_found"      // Resource not found.
 )
 
-// ErrorResponse represents the error response from the API.
+// ErrorResponse represents the error response from the NextDNS API.
 type ErrorResponse struct {
 	Errors []struct {
 		Code   string `json:"code"`
