@@ -53,7 +53,7 @@ func (e *Error) Error() string {
 			if er.Detail != "" {
 				out.WriteString(fmt.Sprintf("%s (%s)", er.Detail, er.Code))
 			} else {
-				out.WriteString(fmt.Sprintf("%s", er.Code))
+				out.WriteString(er.Code)
 			}
 		}
 	} else {
