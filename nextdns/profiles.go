@@ -15,8 +15,8 @@ const profilesAPIPath = "profiles"
 // CreateProfileRequest encapsulates the request for creating a new profile.
 type CreateProfileRequest struct{}
 
-// PatchProfileRequest encapsulates the request for setting custom profile settings.
-type PatchProfileRequest struct {
+// UpdateProfileRequest encapsulates the request for setting custom profile settings.
+type UpdateProfileRequest struct {
 	Profile string
 }
 
@@ -37,7 +37,7 @@ type DeleteProfileRequest struct {
 type ProfilesService interface {
 	Create(context.Context, *CreateProfileRequest) (string, error)
 	Get(context.Context, *GetProfileRequest) (*Profile, error)
-	Patch(context.Context, *PatchProfileRequest, interface{}) error
+	Update(context.Context, *UpdateProfileRequest, interface{}) error
 	List(context.Context, *ListProfileRequest) ([]*Profiles, error)
 	Delete(context.Context, *DeleteProfileRequest) error
 }
@@ -208,22 +208,22 @@ func (ps *profilesService) Create(ctx context.Context, createReq *CreateProfileR
 	return pr.Data.ID, nil
 }
 
-// Patch updates settings of a profile.
-func (ps *profilesService) Patch(ctx context.Context, patchReq *PatchProfileRequest, v interface{}) error {
-	path := fmt.Sprintf("%s/%s", profilesAPIPath, patchReq.Profile)
+// Update updates settings of a profile.
+func (ps *profilesService) Update(ctx context.Context, updateReq *UpdateProfileRequest, v interface{}) error {
+	path := fmt.Sprintf("%s/%s", profilesAPIPath, updateReq.Profile)
 	req, err := ps.client.newRequest(http.MethodPatch, path, v)
 	if err != nil {
-		return errors.Wrap(err, "error creating request to patch the profile")
+		return errors.Wrap(err, "error creating request to update the profile")
 	}
 
 	body, err := json.Marshal(&v)
 	if err != nil {
-		return errors.Wrap(err, "error encoding patch request")
+		return errors.Wrap(err, "error encoding update request")
 	}
 
 	err = ps.client.do(ctx, req, &body)
 	if err != nil {
-		return errors.Wrap(err, "error making a request to patch the profile")
+		return errors.Wrap(err, "error making a request to update the profile")
 	}
 
 	return nil

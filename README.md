@@ -46,7 +46,7 @@ func main() {
 	id, _ := client.Profiles.Create(ctx, &nextdns.CreateProfileRequest{})
 
 	// set a few settings like the name and some other attributes
-	patch := nextdns.Profile{
+	settings := nextdns.Profile{
 		Name: "nextdns-go-example",
 		Settings: nextdns.ProfileSettings{
 			Web3: true,
@@ -54,7 +54,7 @@ func main() {
 	}
 
 	// update the profile
-	_ = client.Profiles.Patch(ctx, &nextdns.PatchProfileRequest{Profile: id}, patch)
+	_ = client.Profiles.Update(ctx, &nextdns.UpdateProfileRequest{Profile: id}, settings)
 
 	// get the profile details to check the settings
 	profile, _ := client.Profiles.Get(ctx, &nextdns.GetProfileRequest{
