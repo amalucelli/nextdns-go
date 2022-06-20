@@ -75,7 +75,7 @@ func WithBaseURL(baseURL string) ClientOption {
 func WithAPIKey(apiKey string) ClientOption {
 	return func(c *Client) error {
 		if apiKey == "" {
-			return errEmptyAPIToken
+			return ErrEmptyAPIToken
 		}
 
 		transport := authTransport{

@@ -9,7 +9,7 @@ import (
 // ErrorType defines the code of an error.
 type ErrorType string
 
-var errEmptyAPIToken = errors.New("api key must not be empty")
+var ErrEmptyAPIToken = errors.New("api key must not be empty")
 
 const (
 	errInternalServiceError = "internal service error received"
