@@ -42,14 +42,58 @@ func main() {
 		nextdns.WithAPIKey(key),
 	)
 
+	// set a few settings like the name and some other attributes
+	new := &nextdns.CreateProfileRequest{
+		Name: "nextdns-go",
+		Denylist: []*nextdns.Denylist{
+			{
+				ID:     "google.com",
+				Active: true,
+			},
+			{
+				ID:     "bing.com",
+				Active: true,
+			},
+		},
+		Allowlist: []*nextdns.Allowlist{
+			{
+				ID:     "duckduckgo.com",
+				Active: true,
+			},
+			{
+				ID:     "search.brave.com",
+				Active: false,
+			},
+		},
+		ParentalControl: &nextdns.ParentalControl{
+			Categories: []*nextdns.ParentalControlCategories{
+				{
+					ID:     "gambling",
+					Active: true,
+				},
+			},
+		},
+		Security: &nextdns.Security{
+			AiThreatDetection: true,
+		},
+		Settings: &nextdns.Settings{
+			Logs: &nextdns.SettingsLogs{
+				Enabled: true,
+			},
+			Web3: true,
+		},
+	}
+
 	// create a new profile
-	id, _ := client.Profiles.Create(ctx, &nextdns.CreateProfileRequest{})
+	id, _ := client.Profiles.Create(ctx, new)
 
 	// set a few settings like the name and some other attributes
-	settings := nextdns.Profile{
-		Name: "nextdns-go-example",
-		Settings: nextdns.ProfileSettings{
-			Web3: true,
+	settings := &nextdns.Profile{
+		Name: "nextdns-go-updated",
+		Settings: &nextdns.Settings{
+			Logs: &nextdns.SettingsLogs{
+				Enabled: false,
+			},
 		},
 	}
 
@@ -61,7 +105,7 @@ func main() {
 		Profile: id,
 	})
 	fmt.Printf("%q profile name: %s\n", id, profile.Name)
-	fmt.Printf("%q web3 status: %t\n", id, profile.Settings.Web3)
+	fmt.Printf("%q logs status: %t\n", id, profile.Settings.Logs.Enabled)
 
 	// list all the profiles
 	profiles, _ := client.Profiles.List(ctx, &nextdns.ListProfileRequest{})
