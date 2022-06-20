@@ -18,18 +18,19 @@ type SettingsBlockPage struct {
 
 // GetSettingsBlockPageRequest encapsulates the request for getting the settings block page of a profile.
 type GetSettingsBlockPageRequest struct {
-	Profile string
+	ProfileID string
 }
 
 // UpdateSettingsBlockPageRequest encapsulates the request for updating the settings block page of a profile.
 type UpdateSettingsBlockPageRequest struct {
-	Profile string
+	ProfileID         string
+	SettingsBlockPage *SettingsBlockPage
 }
 
 // SettingsBlockPageService is an interface for communicating with the NextDNS settings block page API endpoint.
 type SettingsBlockPageService interface {
 	Get(context.Context, *GetSettingsBlockPageRequest) (*SettingsBlockPage, error)
-	Update(context.Context, *UpdateSettingsBlockPageRequest, *SettingsBlockPage) error
+	Update(context.Context, *UpdateSettingsBlockPageRequest) error
 }
 
 // settingsBlockPageResponse represents the settings block page response.
@@ -54,7 +55,7 @@ func NewSettingsBlockPageService(client *Client) *settingsBlockPageService {
 
 // Get returns the settings block page of a profile.
 func (s *settingsBlockPageService) Get(ctx context.Context, request *GetSettingsBlockPageRequest) (*SettingsBlockPage, error) {
-	path := fmt.Sprintf("%s/%s", profileAPIPath(request.Profile), settingsBlockPageAPIPath)
+	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), settingsBlockPageAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "error creating request to get the block page settings")
@@ -70,9 +71,9 @@ func (s *settingsBlockPageService) Get(ctx context.Context, request *GetSettings
 }
 
 // Update updates the settings block page of a profile.
-func (s *settingsBlockPageService) Update(ctx context.Context, request *UpdateSettingsBlockPageRequest, v *SettingsBlockPage) error {
-	path := fmt.Sprintf("%s/%s", profileAPIPath(request.Profile), settingsBlockPageAPIPath)
-	req, err := s.client.newRequest(http.MethodPatch, path, v)
+func (s *settingsBlockPageService) Update(ctx context.Context, request *UpdateSettingsBlockPageRequest) error {
+	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), settingsBlockPageAPIPath)
+	req, err := s.client.newRequest(http.MethodPatch, path, request.SettingsBlockPage)
 	if err != nil {
 		return errors.Wrap(err, "error creating request to update the block page settings")
 	}

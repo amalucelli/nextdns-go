@@ -49,7 +49,7 @@ func main() {
 	)
 
 	// set a few settings like the name and some other attributes
-	new := &nextdns.CreateProfileRequest{
+	create := &nextdns.CreateProfileRequest{
 		Name: "nextdns-go",
 		Denylist: []*nextdns.Denylist{
 			{
@@ -91,24 +91,27 @@ func main() {
 	}
 
 	// create a new profile
-	id, _ := client.Profiles.Create(ctx, new)
+	id, _ := client.Profiles.Create(ctx, create)
 
 	// set a few settings like the name and some other attributes
-	settings := &nextdns.Profile{
-		Name: "nextdns-go-updated",
-		Settings: &nextdns.Settings{
-			Logs: &nextdns.SettingsLogs{
-				Enabled: false,
+	update := &nextdns.UpdateProfileRequest{
+		ProfileID: id,
+		Profile: &nextdns.Profile{
+			Name: "nextdns-go-updated",
+			Settings: &nextdns.Settings{
+				Logs: &nextdns.SettingsLogs{
+					Enabled: false,
+				},
 			},
 		},
 	}
 
 	// update the profile
-	_ = client.Profiles.Update(ctx, &nextdns.UpdateProfileRequest{Profile: id}, settings)
+	_ = client.Profiles.Update(ctx, update)
 
 	// get the profile details to check the settings
 	profile, _ := client.Profiles.Get(ctx, &nextdns.GetProfileRequest{
-		Profile: id,
+		ProfileID: id,
 	})
 	fmt.Printf("%q profile name: %s\n", id, profile.Name)
 	fmt.Printf("%q logs status: %t\n", id, profile.Settings.Logs.Enabled)
@@ -123,7 +126,7 @@ func main() {
 
 	// delete the profile
 	_ = client.Profiles.Delete(ctx, &nextdns.DeleteProfileRequest{
-		Profile: id,
+		ProfileID: id,
 	})
 }
 ```
@@ -152,24 +155,22 @@ func main() {
 	)
 
 	// set the profile id
-	id := "acb123"
-
-	// disable the "google.com" domain in the denlylist
-	status := &nextdns.Denylist{
-		Active: false,
-	}
+	id := "abc123"
 
 	// set the request to update the denylist
 	request := &nextdns.UpdateDenylistRequest{
-		Profile: id,
+		ProfileID: id,
 		ID:      "google.com",
+		Denylist: &nextdns.Denylist{
+			Active: true,
+		},
 	}
 
 	// update the denylist
-	_ = client.Denylist.Update(ctx, request, status)
+	_ = client.Denylist.Update(ctx, request)
 
 	// list all the denylist entries
-	list, _ := client.Denylist.Get(ctx, &nextdns.GetDenylistRequest{Profile: id})
+	list, _ := client.Denylist.Get(ctx, &nextdns.GetDenylistRequest{ProfileID: id})
 	for _, p := range list {
 		fmt.Printf("ID: %q\n", p.ID)
 		fmt.Printf("Status: %t\n", p.Active)

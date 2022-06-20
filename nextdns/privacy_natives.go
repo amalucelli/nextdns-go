@@ -18,17 +18,18 @@ type PrivacyNatives struct {
 
 // CreatePrivacyNativesRequest encapsulates the request for creating a privacy native tracking protection list.
 type CreatePrivacyNativesRequest struct {
-	Profile string
+	ProfileID      string
+	PrivacyNatives []*PrivacyNatives
 }
 
 // GetPrivacyNativesRequest encapsulates the request for getting the privacy native tracking protection list.
 type GetPrivacyNativesRequest struct {
-	Profile string
+	ProfileID string
 }
 
 // PrivacyNativesService is an interface for communicating with the NextDNS privacy native tracking protection API endpoint.
 type PrivacyNativesService interface {
-	Create(context.Context, *CreatePrivacyNativesRequest, []*PrivacyNatives) error
+	Create(context.Context, *CreatePrivacyNativesRequest) error
 	Get(context.Context, *GetPrivacyNativesRequest) ([]*PrivacyNatives, error)
 }
 
@@ -53,9 +54,9 @@ func NewPrivacyNativesService(client *Client) *privacyNativesService {
 }
 
 // Create creates a privacy native tracking protection list.
-func (s *privacyNativesService) Create(ctx context.Context, request *CreatePrivacyNativesRequest, v []*PrivacyNatives) error {
-	path := fmt.Sprintf("%s/%s", profileAPIPath(request.Profile), privacyNativesAPIPath)
-	req, err := s.client.newRequest(http.MethodPut, path, v)
+func (s *privacyNativesService) Create(ctx context.Context, request *CreatePrivacyNativesRequest) error {
+	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), privacyNativesAPIPath)
+	req, err := s.client.newRequest(http.MethodPut, path, request.PrivacyNatives)
 	if err != nil {
 		return errors.Wrap(err, "error creating request to create a privacy native list")
 	}
@@ -71,7 +72,7 @@ func (s *privacyNativesService) Create(ctx context.Context, request *CreatePriva
 
 // Get returns the privacy native tracking protection list.
 func (s *privacyNativesService) Get(ctx context.Context, request *GetPrivacyNativesRequest) ([]*PrivacyNatives, error) {
-	path := fmt.Sprintf("%s/%s", profileAPIPath(request.Profile), privacyNativesAPIPath)
+	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), privacyNativesAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "error creating request to get the privacy native list")

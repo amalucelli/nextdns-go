@@ -19,25 +19,27 @@ type ParentalControlCategories struct {
 
 // CreateParentalControlCategoriesRequest encapsulates the request for creating a parental control categories list.
 type CreateParentalControlCategoriesRequest struct {
-	Profile string
+	ProfileID                 string
+	ParentalControlCategories []*ParentalControlCategories
 }
 
 // UpdateParentalControlCategoriesRequest encapsulates the request for updating a parental control categories list.
 type UpdateParentalControlCategoriesRequest struct {
-	Profile string
-	ID      string
+	ProfileID                 string
+	ID                        string
+	ParentalControlCategories *ParentalControlCategories
 }
 
 // GetParentalControlCategoriesRequest encapsulates the request for getting a parental control categories list.
 type GetParentalControlCategoriesRequest struct {
-	Profile string
+	ProfileID string
 }
 
 // ParentalControlCategoriesService is an interface for communicating with the NextDNS parental control categories API endpoint.
 type ParentalControlCategoriesService interface {
-	Create(context.Context, *CreateParentalControlCategoriesRequest, []*ParentalControlCategories) error
+	Create(context.Context, *CreateParentalControlCategoriesRequest) error
 	Get(context.Context, *GetParentalControlCategoriesRequest) ([]*ParentalControlCategories, error)
-	Update(context.Context, *UpdateParentalControlCategoriesRequest, *ParentalControlCategories) error
+	Update(context.Context, *UpdateParentalControlCategoriesRequest) error
 }
 
 // parentalControlCategoriesResponse represents the parental control categories response.
@@ -61,9 +63,9 @@ func NewParentalControlCategoriesService(client *Client) *parentalControlCategor
 }
 
 // Create creates a parental control categories list.
-func (s *parentalControlCategoriesService) Create(ctx context.Context, request *CreateParentalControlCategoriesRequest, v []*ParentalControlCategories) error {
-	path := fmt.Sprintf("%s/%s", profileAPIPath(request.Profile), parentalControlCategoriesAPIPath)
-	req, err := s.client.newRequest(http.MethodPut, path, v)
+func (s *parentalControlCategoriesService) Create(ctx context.Context, request *CreateParentalControlCategoriesRequest) error {
+	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), parentalControlCategoriesAPIPath)
+	req, err := s.client.newRequest(http.MethodPut, path, request.ParentalControlCategories)
 	if err != nil {
 		return errors.Wrap(err, "error creating request to create a parental control categories")
 	}
@@ -79,7 +81,7 @@ func (s *parentalControlCategoriesService) Create(ctx context.Context, request *
 
 // Get returns a parental control categories list.
 func (s *parentalControlCategoriesService) Get(ctx context.Context, request *GetParentalControlCategoriesRequest) ([]*ParentalControlCategories, error) {
-	path := fmt.Sprintf("%s/%s", profileAPIPath(request.Profile), parentalControlCategoriesAPIPath)
+	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), parentalControlCategoriesAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "error creating request to get the parental control categories")
@@ -95,9 +97,9 @@ func (s *parentalControlCategoriesService) Get(ctx context.Context, request *Get
 }
 
 // Update updates a parental control categories list.
-func (s *parentalControlCategoriesService) Update(ctx context.Context, request *UpdateParentalControlCategoriesRequest, v *ParentalControlCategories) error {
-	path := fmt.Sprintf("%s/%s", profileAPIPath(request.Profile), parentalControlCategoriesIDAPIPath(request.ID))
-	req, err := s.client.newRequest(http.MethodPatch, path, v)
+func (s *parentalControlCategoriesService) Update(ctx context.Context, request *UpdateParentalControlCategoriesRequest) error {
+	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), parentalControlCategoriesIDAPIPath(request.ID))
+	req, err := s.client.newRequest(http.MethodPatch, path, request.ParentalControlCategories)
 	if err != nil {
 		return errors.Wrap(err, "error creating request to update the parental control categories")
 	}

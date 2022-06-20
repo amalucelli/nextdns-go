@@ -24,12 +24,13 @@ type CreateProfileRequest struct {
 
 // UpdateProfileRequest encapsulates the request for setting custom profile settings.
 type UpdateProfileRequest struct {
-	Profile string
+	ProfileID string
+	Profile   *Profile
 }
 
 // GetProfileRequest encapsulates the request for getting a profile.
 type GetProfileRequest struct {
-	Profile string
+	ProfileID string
 }
 
 // ListProfileRequest encapsulates the request for listing all the profiles.
@@ -37,14 +38,14 @@ type ListProfileRequest struct{}
 
 // DeleteProfileRequest encapsulates the request for deleting a profile.
 type DeleteProfileRequest struct {
-	Profile string
+	ProfileID string
 }
 
 // ProfilesService is an interface for communicating with the NextDNS API.
 type ProfilesService interface {
 	Create(context.Context, *CreateProfileRequest) (string, error)
 	Get(context.Context, *GetProfileRequest) (*Profile, error)
-	Update(context.Context, *UpdateProfileRequest, *Profile) error
+	Update(context.Context, *UpdateProfileRequest) error
 	List(context.Context, *ListProfileRequest) ([]*Profiles, error)
 	Delete(context.Context, *DeleteProfileRequest) error
 }
@@ -138,9 +139,9 @@ func (s *profilesService) Create(ctx context.Context, request *CreateProfileRequ
 }
 
 // Update updates the settings of a profile.
-func (s *profilesService) Update(ctx context.Context, request *UpdateProfileRequest, v *Profile) error {
-	path := fmt.Sprintf("%s/%s", profilesAPIPath, request.Profile)
-	req, err := s.client.newRequest(http.MethodPatch, path, v)
+func (s *profilesService) Update(ctx context.Context, request *UpdateProfileRequest) error {
+	path := fmt.Sprintf("%s/%s", profilesAPIPath, request.ProfileID)
+	req, err := s.client.newRequest(http.MethodPatch, path, request.Profile)
 	if err != nil {
 		return errors.Wrap(err, "error creating request to update the profile")
 	}
@@ -156,7 +157,7 @@ func (s *profilesService) Update(ctx context.Context, request *UpdateProfileRequ
 
 // Get returns a profile.
 func (s *profilesService) Get(ctx context.Context, request *GetProfileRequest) (*Profile, error) {
-	path := fmt.Sprintf("%s/%s", profilesAPIPath, request.Profile)
+	path := fmt.Sprintf("%s/%s", profilesAPIPath, request.ProfileID)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "error creating request to get the profile")
@@ -173,7 +174,7 @@ func (s *profilesService) Get(ctx context.Context, request *GetProfileRequest) (
 
 // Delete deletes a profile.
 func (s *profilesService) Delete(ctx context.Context, request *DeleteProfileRequest) error {
-	path := fmt.Sprintf("%s/%s", profilesAPIPath, request.Profile)
+	path := fmt.Sprintf("%s/%s", profilesAPIPath, request.ProfileID)
 	req, err := s.client.newRequest(http.MethodDelete, path, nil)
 	if err != nil {
 		return errors.Wrap(err, "error creating request to delete the profile")

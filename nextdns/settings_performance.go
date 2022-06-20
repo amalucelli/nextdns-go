@@ -20,18 +20,19 @@ type SettingsPerformance struct {
 
 // GetSettingsPerformanceRequest encapsulates the request for getting the settings performance of a profile.
 type GetSettingsPerformanceRequest struct {
-	Profile string
+	ProfileID string
 }
 
 // UpdateSettingsPerformanceRequest encapsulates the request for updating the settings performance of a profile.
 type UpdateSettingsPerformanceRequest struct {
-	Profile string
+	ProfileID           string
+	SettingsPerformance *SettingsPerformance
 }
 
 // SettingsPerformanceService is an interface for communicating with the NextDNS settings performance API endpoint.
 type SettingsPerformanceService interface {
 	Get(context.Context, *GetSettingsPerformanceRequest) (*SettingsPerformance, error)
-	Update(context.Context, *UpdateSettingsPerformanceRequest, *SettingsPerformance) error
+	Update(context.Context, *UpdateSettingsPerformanceRequest) error
 }
 
 // settingsPerformanceResponse represents the settings performance response.
@@ -56,7 +57,7 @@ func NewSettingsPerformanceService(client *Client) *settingsPerformanceService {
 
 // Get returns the performance settings of a profile.
 func (s *settingsPerformanceService) Get(ctx context.Context, request *GetSettingsPerformanceRequest) (*SettingsPerformance, error) {
-	path := fmt.Sprintf("%s/%s", profileAPIPath(request.Profile), settingsPerformanceAPIPath)
+	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), settingsPerformanceAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "error creating request to get the performance settings")
@@ -72,9 +73,9 @@ func (s *settingsPerformanceService) Get(ctx context.Context, request *GetSettin
 }
 
 // Update updates the performance settings of a profile.
-func (s *settingsPerformanceService) Update(ctx context.Context, request *UpdateSettingsPerformanceRequest, v *SettingsPerformance) error {
-	path := fmt.Sprintf("%s/%s", profileAPIPath(request.Profile), settingsPerformanceAPIPath)
-	req, err := s.client.newRequest(http.MethodPatch, path, v)
+func (s *settingsPerformanceService) Update(ctx context.Context, request *UpdateSettingsPerformanceRequest) error {
+	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), settingsPerformanceAPIPath)
+	req, err := s.client.newRequest(http.MethodPatch, path, request.SettingsPerformance)
 	if err != nil {
 		return errors.Wrap(err, "error creating request to update the performance settings")
 	}

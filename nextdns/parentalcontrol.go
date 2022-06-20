@@ -22,18 +22,19 @@ type ParentalControl struct {
 
 // UpdateParentalControlRequest encapsulates the request for updating a parental control settings.
 type UpdateParentalControlRequest struct {
-	Profile string
+	ProfileID       string
+	ParentalControl *ParentalControl
 }
 
 // GetParentalControlRequest encapsulates the request for getting a parental control settings.
 type GetParentalControlRequest struct {
-	Profile string
+	ProfileID string
 }
 
 // ParentalControlService is an interface for communicating with the NextDNS parental control API endpoint.
 type ParentalControlService interface {
 	Get(context.Context, *GetParentalControlRequest) (*ParentalControl, error)
-	Update(context.Context, *UpdateParentalControlRequest, *ParentalControl) error
+	Update(context.Context, *UpdateParentalControlRequest) error
 }
 
 // parentalControlResponse represents the NextDNS parental control service.
@@ -58,7 +59,7 @@ func NewParentalControlService(client *Client) *parentalControlService {
 
 // Get returns the parental control settings of a profile.
 func (s *parentalControlService) Get(ctx context.Context, request *GetParentalControlRequest) (*ParentalControl, error) {
-	path := fmt.Sprintf("%s/%s", profileAPIPath(request.Profile), parentalControlAPIPath)
+	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), parentalControlAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "error creating request to get the parentalControl")
@@ -74,9 +75,9 @@ func (s *parentalControlService) Get(ctx context.Context, request *GetParentalCo
 }
 
 // Update updates the parental control settings of a profile.
-func (s *parentalControlService) Update(ctx context.Context, request *UpdateParentalControlRequest, v *ParentalControl) error {
-	path := fmt.Sprintf("%s/%s", profileAPIPath(request.Profile), parentalControlAPIPath)
-	req, err := s.client.newRequest(http.MethodPatch, path, v)
+func (s *parentalControlService) Update(ctx context.Context, request *UpdateParentalControlRequest) error {
+	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), parentalControlAPIPath)
+	req, err := s.client.newRequest(http.MethodPatch, path, request.ParentalControl)
 	if err != nil {
 		return errors.Wrap(err, "error creating request to update the parentalControl")
 	}

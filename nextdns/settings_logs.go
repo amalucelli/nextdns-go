@@ -27,18 +27,19 @@ type SettingsLogs struct {
 
 // GetSettingsLogsRequest encapsulates the request for getting the settings logs of a profile.
 type GetSettingsLogsRequest struct {
-	Profile string
+	ProfileID string
 }
 
 // UpdateSettingsLogsRequest encapsulates the request for updating the settings logs of a profile.
 type UpdateSettingsLogsRequest struct {
-	Profile string
+	ProfileID    string
+	SettingsLogs *SettingsLogs
 }
 
 // SettingsLogsService is an interface for communicating with the NextDNS settings logs API endpoint.
 type SettingsLogsService interface {
 	Get(context.Context, *GetSettingsLogsRequest) (*SettingsLogs, error)
-	Update(context.Context, *UpdateSettingsLogsRequest, *SettingsLogs) error
+	Update(context.Context, *UpdateSettingsLogsRequest) error
 }
 
 // settingsLogsResponse represents the settings logs response.
@@ -63,7 +64,7 @@ func NewSettingsLogsService(client *Client) *settingsLogsService {
 
 // Get returns the settings logs of a profile.
 func (s *settingsLogsService) Get(ctx context.Context, request *GetSettingsLogsRequest) (*SettingsLogs, error) {
-	path := fmt.Sprintf("%s/%s", profileAPIPath(request.Profile), settingsLogsAPIPath)
+	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), settingsLogsAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "error creating request to get the logs settings")
@@ -79,9 +80,9 @@ func (s *settingsLogsService) Get(ctx context.Context, request *GetSettingsLogsR
 }
 
 // Update updates the settings logs of a profile.
-func (s *settingsLogsService) Update(ctx context.Context, request *UpdateSettingsLogsRequest, v *SettingsLogs) error {
-	path := fmt.Sprintf("%s/%s", profileAPIPath(request.Profile), settingsLogsAPIPath)
-	req, err := s.client.newRequest(http.MethodPatch, path, v)
+func (s *settingsLogsService) Update(ctx context.Context, request *UpdateSettingsLogsRequest) error {
+	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), settingsLogsAPIPath)
+	req, err := s.client.newRequest(http.MethodPatch, path, request.SettingsLogs)
 	if err != nil {
 		return errors.Wrap(err, "error creating request to update the logs settings")
 	}

@@ -29,18 +29,19 @@ type Security struct {
 
 // UpdateSecurityRequest encapsulates the request for updating security settings.
 type UpdateSecurityRequest struct {
-	Profile string
+	ProfileID string
+	Security  *Security
 }
 
 // GetSecurityRequest encapsulates the request for getting a security settings.
 type GetSecurityRequest struct {
-	Profile string
+	ProfileID string
 }
 
 // SecurityService is an interface for communicating with the NextDNS security API endpoint.
 type SecurityService interface {
 	Get(context.Context, *GetSecurityRequest) (*Security, error)
-	Update(context.Context, *UpdateSecurityRequest, *Security) error
+	Update(context.Context, *UpdateSecurityRequest) error
 }
 
 // securityResponse represents the security settings response.
@@ -65,7 +66,7 @@ func NewSecurityService(client *Client) *securityService {
 
 // Get returns the security settings of a profile.
 func (s *securityService) Get(ctx context.Context, request *GetSecurityRequest) (*Security, error) {
-	path := fmt.Sprintf("%s/%s", profileAPIPath(request.Profile), securityAPIPath)
+	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), securityAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "error creating request to get the security settings")
@@ -81,9 +82,9 @@ func (s *securityService) Get(ctx context.Context, request *GetSecurityRequest) 
 }
 
 // Update updates the security settings of a profile.
-func (s *securityService) Update(ctx context.Context, request *UpdateSecurityRequest, v *Security) error {
-	path := fmt.Sprintf("%s/%s", profileAPIPath(request.Profile), securityAPIPath)
-	req, err := s.client.newRequest(http.MethodPatch, path, v)
+func (s *securityService) Update(ctx context.Context, request *UpdateSecurityRequest) error {
+	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), securityAPIPath)
+	req, err := s.client.newRequest(http.MethodPatch, path, request.Security)
 	if err != nil {
 		return errors.Wrap(err, "error creating request to update the security settings")
 	}

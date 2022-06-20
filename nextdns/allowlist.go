@@ -19,25 +19,27 @@ type Allowlist struct {
 
 // CreateAllowlistRequest encapsulates the request for creating an allowlist.
 type CreateAllowlistRequest struct {
-	Profile string
+	ProfileID string
+	Allowlist []*Allowlist
 }
 
 // GetAllowlistRequest encapsulates the request for getting an allowlist.
 type GetAllowlistRequest struct {
-	Profile string
+	ProfileID string
 }
 
 // UpdateAllowlistRequest encapsulates the request for updating an allowlist.
 type UpdateAllowlistRequest struct {
-	Profile string
-	ID      string
+	ProfileID string
+	ID        string
+	Allowlist *Allowlist
 }
 
 // AllowlistService is an interface for communicating with the NextDNS allowlist API endpoint.
 type AllowlistService interface {
-	Create(context.Context, *CreateAllowlistRequest, []*Allowlist) error
+	Create(context.Context, *CreateAllowlistRequest) error
 	Get(context.Context, *GetAllowlistRequest) ([]*Allowlist, error)
-	Update(context.Context, *UpdateAllowlistRequest, *Allowlist) error
+	Update(context.Context, *UpdateAllowlistRequest) error
 }
 
 // allowlistResponse represents the allowlist response.
@@ -61,9 +63,9 @@ func NewAllowlistService(client *Client) *allowlistService {
 }
 
 // Create creates an allowlist for a profile.
-func (s *allowlistService) Create(ctx context.Context, request *CreateAllowlistRequest, v []*Allowlist) error {
-	path := fmt.Sprintf("%s/%s", profileAPIPath(request.Profile), allowlistAPIPath)
-	req, err := s.client.newRequest(http.MethodPut, path, v)
+func (s *allowlistService) Create(ctx context.Context, request *CreateAllowlistRequest) error {
+	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), allowlistAPIPath)
+	req, err := s.client.newRequest(http.MethodPut, path, request.Allowlist)
 	if err != nil {
 		return errors.Wrap(err, "error creating request to create an allow list")
 	}
@@ -79,7 +81,7 @@ func (s *allowlistService) Create(ctx context.Context, request *CreateAllowlistR
 
 // Get returns the allowlist of a profile.
 func (s *allowlistService) Get(ctx context.Context, request *GetAllowlistRequest) ([]*Allowlist, error) {
-	path := fmt.Sprintf("%s/%s", profileAPIPath(request.Profile), allowlistAPIPath)
+	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), allowlistAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "error creating request to get the allow list")
@@ -95,9 +97,9 @@ func (s *allowlistService) Get(ctx context.Context, request *GetAllowlistRequest
 }
 
 // Update updates an allowlist of a profile.
-func (s *allowlistService) Update(ctx context.Context, request *UpdateAllowlistRequest, v *Allowlist) error {
-	path := fmt.Sprintf("%s/%s", profileAPIPath(request.Profile), allowlistIDAPIPath(request.ID))
-	req, err := s.client.newRequest(http.MethodPatch, path, v)
+func (s *allowlistService) Update(ctx context.Context, request *UpdateAllowlistRequest) error {
+	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), allowlistIDAPIPath(request.ID))
+	req, err := s.client.newRequest(http.MethodPatch, path, request.Allowlist)
 	if err != nil {
 		return errors.Wrap(err, fmt.Sprintf("error creating request to update the allow list id: %s", request.ID))
 	}

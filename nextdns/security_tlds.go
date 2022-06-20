@@ -18,17 +18,18 @@ type SecurityTlds struct {
 
 // CreateSecurityTldsRequest encapsulates the request for creating a security TLDs list.
 type CreateSecurityTldsRequest struct {
-	Profile string
+	ProfileID    string
+	SecurityTlds []*SecurityTlds
 }
 
 // GetSecurityTldsRequest encapsulates the request for getting a security TLDs list.
 type GetSecurityTldsRequest struct {
-	Profile string
+	ProfileID string
 }
 
 // SecurityTldsService is an interface for communicating with the NextDNS security TLDs API endpoint.
 type SecurityTldsService interface {
-	Create(context.Context, *CreateSecurityTldsRequest, []*SecurityTlds) error
+	Create(context.Context, *CreateSecurityTldsRequest) error
 	Get(context.Context, *GetSecurityTldsRequest) ([]*SecurityTlds, error)
 }
 
@@ -53,9 +54,9 @@ func NewSecurityTldsService(client *Client) *securityTldsService {
 }
 
 // Create creates a security TLDs list.
-func (s *securityTldsService) Create(ctx context.Context, request *CreateSecurityTldsRequest, v []*SecurityTlds) error {
-	path := fmt.Sprintf("%s/%s", profileAPIPath(request.Profile), securityTldsAPIPath)
-	req, err := s.client.newRequest(http.MethodPut, path, v)
+func (s *securityTldsService) Create(ctx context.Context, request *CreateSecurityTldsRequest) error {
+	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), securityTldsAPIPath)
+	req, err := s.client.newRequest(http.MethodPut, path, request.SecurityTlds)
 	if err != nil {
 		return errors.Wrap(err, "error creating request to create a security tlds list")
 	}
@@ -71,7 +72,7 @@ func (s *securityTldsService) Create(ctx context.Context, request *CreateSecurit
 
 // Get returns a security TLDs list.
 func (s *securityTldsService) Get(ctx context.Context, request *GetSecurityTldsRequest) ([]*SecurityTlds, error) {
-	path := fmt.Sprintf("%s/%s", profileAPIPath(request.Profile), securityTldsAPIPath)
+	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), securityTldsAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "error creating request to get the security tlds list")

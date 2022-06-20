@@ -21,18 +21,19 @@ type Privacy struct {
 
 // UpdatePrivacyRequest encapsulates the request for updating the privacy settings of a profile.
 type UpdatePrivacyRequest struct {
-	Profile string
+	ProfileID string
+	Privacy   *Privacy
 }
 
 // GetPrivacyRequest encapsulates the request for getting the privacy settings of a profile.
 type GetPrivacyRequest struct {
-	Profile string
+	ProfileID string
 }
 
 // PrivacyService is an interface for communicating with the NextDNS privacy settings API endpoint.
 type PrivacyService interface {
 	Get(context.Context, *GetPrivacyRequest) (*Privacy, error)
-	Update(context.Context, *UpdatePrivacyRequest, *Privacy) error
+	Update(context.Context, *UpdatePrivacyRequest) error
 }
 
 // privacyResponse represents the NextDNS privacy settings service.
@@ -57,7 +58,7 @@ func NewPrivacyService(client *Client) *privacyService {
 
 // Get returns the privacy settings of a profile.
 func (s *privacyService) Get(ctx context.Context, request *GetPrivacyRequest) (*Privacy, error) {
-	path := fmt.Sprintf("%s/%s", profileAPIPath(request.Profile), privacyAPIPath)
+	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), privacyAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "error creating request to get the privacy")
@@ -73,9 +74,9 @@ func (s *privacyService) Get(ctx context.Context, request *GetPrivacyRequest) (*
 }
 
 // Update updates the privacy settings of a profile.
-func (s *privacyService) Update(ctx context.Context, request *UpdatePrivacyRequest, v *Privacy) error {
-	path := fmt.Sprintf("%s/%s", profileAPIPath(request.Profile), privacyAPIPath)
-	req, err := s.client.newRequest(http.MethodPatch, path, v)
+func (s *privacyService) Update(ctx context.Context, request *UpdatePrivacyRequest) error {
+	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), privacyAPIPath)
+	req, err := s.client.newRequest(http.MethodPatch, path, request.Privacy)
 	if err != nil {
 		return errors.Wrap(err, "error creating request to update the privacy")
 	}

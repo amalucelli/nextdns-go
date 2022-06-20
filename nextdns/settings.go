@@ -21,18 +21,19 @@ type Settings struct {
 
 // UpdateSettingsRequest encapsulates the request for updating the settings of a profile.
 type UpdateSettingsRequest struct {
-	Profile string
+	ProfileID string
+	Settings  *Settings
 }
 
 // GetSettingsRequest encapsulates the request for getting the settings of a profile.
 type GetSettingsRequest struct {
-	Profile string
+	ProfileID string
 }
 
 // SettingsService is an interface for communicating with the NextDNS settings API endpoint.
 type SettingsService interface {
 	Get(context.Context, *GetSettingsRequest) (*Settings, error)
-	Update(context.Context, *UpdateSettingsRequest, *Settings) error
+	Update(context.Context, *UpdateSettingsRequest) error
 }
 
 // settingsResponse represents the settings response.
@@ -57,7 +58,7 @@ func NewSettingsService(client *Client) *settingsService {
 
 // Get returns the settings of a profile.
 func (s *settingsService) Get(ctx context.Context, request *GetSettingsRequest) (*Settings, error) {
-	path := fmt.Sprintf("%s/%s", profileAPIPath(request.Profile), settingsAPIPath)
+	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), settingsAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "error creating request to get the settings")
@@ -73,9 +74,9 @@ func (s *settingsService) Get(ctx context.Context, request *GetSettingsRequest) 
 }
 
 // Update updates the settings of a profile.
-func (s *settingsService) Update(ctx context.Context, request *UpdateSettingsRequest, v *Settings) error {
-	path := fmt.Sprintf("%s/%s", profileAPIPath(request.Profile), settingsAPIPath)
-	req, err := s.client.newRequest(http.MethodPatch, path, v)
+func (s *settingsService) Update(ctx context.Context, request *UpdateSettingsRequest) error {
+	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), settingsAPIPath)
+	req, err := s.client.newRequest(http.MethodPatch, path, request.Settings)
 	if err != nil {
 		return errors.Wrap(err, "error creating request to update the settings")
 	}

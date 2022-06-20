@@ -23,17 +23,18 @@ type PrivacyBlocklists struct {
 
 // CreatePrivacyBlocklistsRequest encapsulates the request for creating a privacy blocklist.
 type CreatePrivacyBlocklistsRequest struct {
-	Profile string
+	ProfileID         string
+	PrivacyBlocklists []*PrivacyBlocklists
 }
 
 // GetPrivacyBlocklistsRequest encapsulates the request for getting the privacy blocklist.
 type GetPrivacyBlocklistsRequest struct {
-	Profile string
+	ProfileID string
 }
 
 // PrivacyBlocklistsService is an interface for communicating with the NextDNS privacy blocklist API endpoint.
 type PrivacyBlocklistsService interface {
-	Create(context.Context, *CreatePrivacyBlocklistsRequest, []*PrivacyBlocklists) error
+	Create(context.Context, *CreatePrivacyBlocklistsRequest) error
 	Get(context.Context, *GetPrivacyBlocklistsRequest) ([]*PrivacyBlocklists, error)
 }
 
@@ -58,9 +59,9 @@ func NewPrivacyBlocklistsService(client *Client) *privacyBlocklistsService {
 }
 
 // Create creates a privacy blocklist list for a profile.
-func (s *privacyBlocklistsService) Create(ctx context.Context, request *CreatePrivacyBlocklistsRequest, v []*PrivacyBlocklists) error {
-	path := fmt.Sprintf("%s/%s", profileAPIPath(request.Profile), privacyBlocklistsAPIPath)
-	req, err := s.client.newRequest(http.MethodPut, path, v)
+func (s *privacyBlocklistsService) Create(ctx context.Context, request *CreatePrivacyBlocklistsRequest) error {
+	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), privacyBlocklistsAPIPath)
+	req, err := s.client.newRequest(http.MethodPut, path, request.PrivacyBlocklists)
 	if err != nil {
 		return errors.Wrap(err, "error creating request to create a privacy blocklist")
 	}
@@ -76,7 +77,7 @@ func (s *privacyBlocklistsService) Create(ctx context.Context, request *CreatePr
 
 // Get returns the privacy blocklist for a profile.
 func (s *privacyBlocklistsService) Get(ctx context.Context, request *GetPrivacyBlocklistsRequest) ([]*PrivacyBlocklists, error) {
-	path := fmt.Sprintf("%s/%s", profileAPIPath(request.Profile), privacyBlocklistsAPIPath)
+	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), privacyBlocklistsAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "error creating request to get the privacy blocklist")

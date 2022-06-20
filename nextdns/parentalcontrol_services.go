@@ -19,25 +19,27 @@ type ParentalControlServices struct {
 
 // CreateParentalControlServicesRequest encapsulates the request for creating a parental control services list.
 type CreateParentalControlServicesRequest struct {
-	Profile string
+	ProfileID               string
+	ParentalControlServices []*ParentalControlServices
 }
 
 // UpdateParentalControlServicesRequest encapsulates the request for updating a parental control services list.
 type UpdateParentalControlServicesRequest struct {
-	Profile string
-	ID      string
+	ProfileID               string
+	ID                      string
+	ParentalControlServices *ParentalControlServices
 }
 
 // GetParentalControlServicesRequest encapsulates the request for getting a parental control services list.
 type GetParentalControlServicesRequest struct {
-	Profile string
+	ProfileID string
 }
 
 // ParentalControlServicesService is an interface for communicating with the NextDNS parental control services API endpoint.
 type ParentalControlServicesService interface {
-	Create(context.Context, *CreateParentalControlServicesRequest, []*ParentalControlServices) error
+	Create(context.Context, *CreateParentalControlServicesRequest) error
 	Get(context.Context, *GetParentalControlServicesRequest) ([]*ParentalControlServices, error)
-	Update(context.Context, *UpdateParentalControlServicesRequest, *ParentalControlServices) error
+	Update(context.Context, *UpdateParentalControlServicesRequest) error
 }
 
 // parentalControlServicesResponse represents the NextDNS parental control services service.
@@ -61,9 +63,9 @@ func NewParentalControlServicesService(client *Client) *parentalControlServicesS
 }
 
 // Create creates a parental control services list.
-func (s *parentalControlServicesService) Create(ctx context.Context, request *CreateParentalControlServicesRequest, v []*ParentalControlServices) error {
-	path := fmt.Sprintf("%s/%s", profileAPIPath(request.Profile), parentalControlServicesAPIPath)
-	req, err := s.client.newRequest(http.MethodPut, path, v)
+func (s *parentalControlServicesService) Create(ctx context.Context, request *CreateParentalControlServicesRequest) error {
+	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), parentalControlServicesAPIPath)
+	req, err := s.client.newRequest(http.MethodPut, path, request.ParentalControlServices)
 	if err != nil {
 		return errors.Wrap(err, "error creating request to create a parental control services")
 	}
@@ -79,7 +81,7 @@ func (s *parentalControlServicesService) Create(ctx context.Context, request *Cr
 
 // Get returns a parental control services list.
 func (s *parentalControlServicesService) Get(ctx context.Context, request *GetParentalControlServicesRequest) ([]*ParentalControlServices, error) {
-	path := fmt.Sprintf("%s/%s", profileAPIPath(request.Profile), parentalControlServicesAPIPath)
+	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), parentalControlServicesAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "error creating request to get the parental control services")
@@ -95,9 +97,9 @@ func (s *parentalControlServicesService) Get(ctx context.Context, request *GetPa
 }
 
 // Update updates a parental control services list.
-func (s *parentalControlServicesService) Update(ctx context.Context, request *UpdateParentalControlServicesRequest, v *ParentalControlServices) error {
-	path := fmt.Sprintf("%s/%s", profileAPIPath(request.Profile), parentalControlServicesIDAPIPath(request.ID))
-	req, err := s.client.newRequest(http.MethodPatch, path, v)
+func (s *parentalControlServicesService) Update(ctx context.Context, request *UpdateParentalControlServicesRequest) error {
+	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), parentalControlServicesIDAPIPath(request.ID))
+	req, err := s.client.newRequest(http.MethodPatch, path, request.ParentalControlServices)
 	if err != nil {
 		return errors.Wrap(err, "error creating request to update the parental control services")
 	}
