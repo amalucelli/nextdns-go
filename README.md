@@ -168,6 +168,7 @@ func main() {
 	// update the denylist
 	_ = client.Denylist.Update(ctx, request, status)
 
+	// list all the denylist entries
 	list, _ := client.Denylist.Get(ctx, &nextdns.GetDenylistRequest{Profile: id})
 	for _, p := range list {
 		fmt.Printf("ID: %q\n", p.ID)
