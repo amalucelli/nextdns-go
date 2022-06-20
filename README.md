@@ -152,15 +152,21 @@ func main() {
 	)
 
 	// set the profile id
-	id := "3c9e29"
+	id := "acb123"
 
 	// disable the "google.com" domain in the denlylist
 	status := &nextdns.Denylist{
 		Active: false,
 	}
 
+	// set the request to update the denylist
+	request := &nextdns.UpdateDenylistRequest{
+		Profile: id,
+		ID:      "google.com",
+	}
+
 	// update the denylist
-	_ = client.Denylist.Update(ctx, &nextdns.UpdateDenylistRequest{Profile: id, ID: "google.com"}, status)
+	_ = client.Denylist.Update(ctx, request, status)
 
 	list, _ := client.Denylist.Get(ctx, &nextdns.GetDenylistRequest{Profile: id})
 	for _, p := range list {
