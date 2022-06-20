@@ -121,3 +121,45 @@ func main() {
 	})
 }
 ```
+
+It's also possible to update directly the API child endpoints, like the `/profiles/:profile/denylist` endpoint:
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+
+	"github.com/amalucelli/nextdns-go/nextdns"
+)
+
+func main() {
+	// get the api key from the environment
+	key := os.Getenv("NEXTDNS_API_KEY")
+
+	// client client with a custom API key
+	ctx := context.Background()
+	client, _ := nextdns.New(
+		nextdns.WithAPIKey(key),
+	)
+
+	// set the profile id
+	id := "3c9e29"
+
+	// disable the "google.com" domain in the denlylist
+	status := &nextdns.Denylist{
+		Active: false,
+	}
+
+	// update the denylist
+	_ = client.Denylist.Update(ctx, &nextdns.UpdateDenylistRequest{Profile: id, ID: "google.com"}, status)
+
+	list, _ := client.Denylist.Get(ctx, &nextdns.GetDenylistRequest{Profile: id})
+	for _, p := range list {
+		fmt.Printf("ID: %q\n", p.ID)
+		fmt.Printf("Status: %t\n", p.Active)
+	}
+}
+```
