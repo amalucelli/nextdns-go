@@ -1,6 +1,7 @@
 package nextdns
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 )
@@ -8,8 +9,9 @@ import (
 // ErrorType defines the code of an error.
 type ErrorType string
 
+var errEmptyAPIToken = errors.New("api key must not be empty")
+
 const (
-	errEmptyAPIToken        = "api key must not be empty"
 	errInternalServiceError = "internal service error received"
 	errResponseError        = "response error received"
 	errMalformedError       = "malformed response body received"

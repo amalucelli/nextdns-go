@@ -1,8 +1,18 @@
 linters:
   enable:
-    - thelper
-    - gofumpt
-    - tparallel
-    - unconvert
-    - unparam
-    - wastedassign
+  - errname
+  - errorlint
+  - errorlint
+  - godot
+  - goerr113
+  - gofmt
+  - gofumpt
+  - gosec
+  - misspell
+  - revive
+  - thelper
+  - unconvert
+  - unconvert
+  - whitespace
+  disable:
+  - structcheck
