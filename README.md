@@ -17,6 +17,12 @@ You can find your API Key in the [NextDNS account](https://my.nextdns.io/account
 
 The [official API documentation](https://nextdns.github.io/api/) was the base document for this package.
 
+APIs supported by this package:
+
+- [x] Profile (`/profiles` and `/profiles/:profile`)
+- [ ] Analytics (`/profiles/:profile/analytics`)
+- [ ] Logs (`/profiles/:profile/logs`)
+
 ## Usage
 
 Here is an example usage of the NextAPI Go client for the `/profiles` endpoint:
