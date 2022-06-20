@@ -1,0 +1,90 @@
+package nextdns
+
+import (
+	"context"
+	"fmt"
+	"net/http"
+
+	"github.com/pkg/errors"
+)
+
+// privacyAPIPath is the HTTP path for the privacy settings API.
+const privacyAPIPath = "privacy"
+
+// Privacy represents the privacy settings of a profile.
+type Privacy struct {
+	Blocklists        []*PrivacyBlocklists `json:"blocklists,omitempty"`
+	Natives           []*PrivacyNatives    `json:"natives,omitempty"`
+	DisguisedTrackers bool                 `json:"disguisedTrackers"`
+	AllowAffiliate    bool                 `json:"allowAffiliate"`
+}
+
+// UpdatePrivacyRequest encapsulates the request for updating the privacy settings of a profile.
+type UpdatePrivacyRequest struct {
+	Profile string
+}
+
+// GetPrivacyRequest encapsulates the request for getting the privacy settings of a profile.
+type GetPrivacyRequest struct {
+	Profile string
+}
+
+// PrivacyService is an interface for communicating with the NextDNS privacy settings API endpoint.
+type PrivacyService interface {
+	Get(context.Context, *GetPrivacyRequest) (*Privacy, error)
+	Update(context.Context, *UpdatePrivacyRequest, *Privacy) error
+}
+
+// privacyResponse represents the NextDNS privacy settings service.
+type privacyResponse struct {
+	Privacy *Privacy `json:"data"`
+}
+
+// privacyService represents the NextDNS privacy settings service.
+type privacyService struct {
+	client *Client
+}
+
+var _ PrivacyService = &privacyService{}
+
+// NewPrivacyService returns a new NextDNS privacy service.
+// nolint: revive
+func NewPrivacyService(client *Client) *privacyService {
+	return &privacyService{
+		client: client,
+	}
+}
+
+// Get returns the privacy settings of a profile.
+func (s *privacyService) Get(ctx context.Context, request *GetPrivacyRequest) (*Privacy, error) {
+	path := fmt.Sprintf("%s/%s", profileAPIPath(request.Profile), privacyAPIPath)
+	req, err := s.client.newRequest(http.MethodGet, path, nil)
+	if err != nil {
+		return nil, errors.Wrap(err, "error creating request to get the privacy")
+	}
+
+	response := privacyResponse{}
+	err = s.client.do(ctx, req, &response)
+	if err != nil {
+		return nil, errors.Wrap(err, "error making a request to get the privacy")
+	}
+
+	return response.Privacy, nil
+}
+
+// Update updates the privacy settings of a profile.
+func (s *privacyService) Update(ctx context.Context, request *UpdatePrivacyRequest, v *Privacy) error {
+	path := fmt.Sprintf("%s/%s", profileAPIPath(request.Profile), privacyAPIPath)
+	req, err := s.client.newRequest(http.MethodPatch, path, v)
+	if err != nil {
+		return errors.Wrap(err, "error creating request to update the privacy")
+	}
+
+	response := privacyResponse{}
+	err = s.client.do(ctx, req, &response)
+	if err != nil {
+		return errors.Wrap(err, "error making a request to update the privacy")
+	}
+
+	return nil
+}

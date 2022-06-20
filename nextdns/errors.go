@@ -44,6 +44,7 @@ type Error struct {
 }
 
 // Error returns the string representation of the error.
+// TODO(amalucelli): This is still not the best way to handle multiple errors, make this better at some point.
 func (e *Error) Error() string {
 	var out strings.Builder
 

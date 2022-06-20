@@ -5,9 +5,11 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/hashicorp/go-cleanhttp"
 )
@@ -15,6 +17,7 @@ import (
 const (
 	baseURL     = "https://api.nextdns.io/"
 	contentType = "application/json"
+	userAgent   = "nextdns-go"
 )
 
 // Client represents a NextDNS client.
@@ -22,7 +25,34 @@ type Client struct {
 	client  *http.Client
 	baseURL *url.URL
 
+	// Service for the Profile.
 	Profiles ProfilesService
+
+	// Services for the Allowlist and Denylist.
+	Allowlist AllowlistService
+	Denylist  DenylistService
+
+	// Services for the ParentalControl.
+	ParentalControlServices   ParentalControlServicesService
+	ParentalControlCategories ParentalControlCategoriesService
+
+	// Services for the Privacy.
+	Privacy           PrivacyService
+	PrivacyBlocklists PrivacyBlocklistsService
+	PrivacyNatives    PrivacyNativesService
+
+	// Services for the Settings.
+	Settings            SettingsService
+	SettingsLogs        SettingsLogsService
+	SettingsBlockPage   SettingsBlockPageService
+	SettingsPerformance SettingsPerformanceService
+
+	// Services for the Security.
+	Security     SecurityService
+	SecurityTlds SecurityTldsService
+
+	// Debug mode for the HTTP requests.
+	Debug bool
 }
 
 // ClientOption is a function that can be used to customize the client.
@@ -58,6 +88,14 @@ func WithAPIKey(apiKey string) ClientOption {
 	}
 }
 
+// WithDebug enables debug mode.
+func WithDebug() ClientOption {
+	return func(c *Client) error {
+		c.Debug = true
+		return nil
+	}
+}
+
 // WithHTTPClient sets a custom HTTP client that can be used for requests.
 func WithHTTPClient(client *http.Client) ClientOption {
 	return func(c *Client) error {
@@ -89,7 +127,31 @@ func New(opts ...ClientOption) (*Client, error) {
 		}
 	}
 
-	c.Profiles = &profilesService{client: c}
+	// Initialize the services for the Profile.
+	c.Profiles = NewProfilesService(c)
+
+	// Initialize the services for the Allowlist and Denylist.
+	c.Allowlist = NewAllowlistService(c)
+	c.Denylist = NewDenylistService(c)
+
+	// Initialize the services for the ParentalControl.
+	c.ParentalControlServices = NewParentalControlServicesService(c)
+	c.ParentalControlCategories = NewParentalControlCategoriesService(c)
+
+	// Initialize the services for the Privacy.
+	c.Privacy = NewPrivacyService(c)
+	c.PrivacyBlocklists = NewPrivacyBlocklistsService(c)
+	c.PrivacyNatives = NewPrivacyNativesService(c)
+
+	// Initialize the services for the Settings.
+	c.Settings = NewSettingsService(c)
+	c.SettingsLogs = NewSettingsLogsService(c)
+	c.SettingsBlockPage = NewSettingsBlockPageService(c)
+	c.SettingsPerformance = NewSettingsPerformanceService(c)
+
+	// Initialize the services for the Security.
+	c.Security = NewSecurityService(c)
+	c.SecurityTlds = NewSecurityTldsService(c)
 
 	return c, nil
 }
@@ -97,6 +159,10 @@ func New(opts ...ClientOption) (*Client, error) {
 // do executes an HTTP request and decodes the response into v.
 func (c *Client) do(ctx context.Context, req *http.Request, v interface{}) error {
 	req = req.WithContext(ctx)
+
+	// Sets a custom user agent.
+	req.Header.Set("User-Agent", userAgent)
+
 	res, err := c.client.Do(req)
 	if err != nil {
 		return err
@@ -127,7 +193,8 @@ func (c *Client) handleResponse(ctx context.Context, res *http.Response, v inter
 	}
 
 	// If the response is not a 200, then we need to handle the error.
-	if res.StatusCode >= http.StatusBadRequest {
+	// TODO(amalucelli): Report the behavior to NextDNS, but there are errors that return HTTP 200 ("duplicate" case).
+	if res.StatusCode >= http.StatusBadRequest || strings.Contains(string(out), "\"errors\"") {
 		if res.StatusCode >= http.StatusInternalServerError {
 			return &Error{
 				Type:    ErrorTypeServiceError,
@@ -210,6 +277,9 @@ func (c *Client) newRequest(method string, path string, body interface{}) (*http
 	var req *http.Request
 	switch method {
 	case http.MethodGet:
+		if c.Debug {
+			fmt.Printf("[DEBUG] REQUEST: Method:%s, URL:%s\n", method, u.String())
+		}
 		req, err = http.NewRequest(method, u.String(), nil)
 		if err != nil {
 			return nil, err
@@ -222,7 +292,9 @@ func (c *Client) newRequest(method string, path string, body interface{}) (*http
 				return nil, err
 			}
 		}
-
+		if c.Debug {
+			fmt.Printf("[DEBUG] REQUEST: Method:%s, URL:%s, Body:%v", method, u.String(), buf.String())
+		}
 		req, err = http.NewRequest(method, u.String(), buf)
 		if err != nil {
 			return nil, err
