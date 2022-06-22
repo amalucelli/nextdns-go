@@ -17,4 +17,5 @@
 # Dot environment files
 .env
 
-examples
+# goreleaser files
+dist/
