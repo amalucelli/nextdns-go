@@ -186,6 +186,10 @@ func (c *Client) handleResponse(ctx context.Context, res *http.Response, v inter
 		return nil
 	}
 
+	if c.Debug {
+		fmt.Printf("[DEBUG] RESPONSE: StatusCode:%d, Body:%v\n", res.StatusCode, string(out))
+	}
+
 	// Sets some default additional informations that can be used by the client to debug the error.
 	meta := map[string]string{
 		"body":        string(out),
@@ -293,7 +297,7 @@ func (c *Client) newRequest(method string, path string, body interface{}) (*http
 			}
 		}
 		if c.Debug {
-			fmt.Printf("[DEBUG] REQUEST: Method:%s, URL:%s, Body:%v", method, u.String(), buf.String())
+			fmt.Printf("[DEBUG] REQUEST: Method:%s, URL:%s, Body:%v\n", method, u.String(), buf.String())
 		}
 		req, err = http.NewRequest(method, u.String(), buf)
 		if err != nil {
