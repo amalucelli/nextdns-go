@@ -22,6 +22,7 @@ type Security struct {
 	Typosquatting           bool            `json:"typosquatting"`
 	Dga                     bool            `json:"dga"`
 	Nrd                     bool            `json:"nrd"`
+	DDNS                    bool            `json:"ddns"`
 	Parking                 bool            `json:"parking"`
 	Csam                    bool            `json:"csam"`
 	Tlds                    []*SecurityTlds `json:"tlds,omitempty"`
