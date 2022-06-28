@@ -20,6 +20,7 @@ type CreateProfileRequest struct {
 	Denylist        []*Denylist      `json:"denylist,omitempty"`
 	Allowlist       []*Allowlist     `json:"allowlist,omitempty"`
 	Settings        *Settings        `json:"settings,omitempty"`
+	Rewrites        []*Rewrites      `json:"rewrites,omitempty"`
 }
 
 // UpdateProfileRequest encapsulates the request for setting custom profile settings.
@@ -59,6 +60,7 @@ type Profile struct {
 	Denylist        []*Denylist      `json:"denylist,omitempty"`
 	Allowlist       []*Allowlist     `json:"allowlist,omitempty"`
 	Settings        *Settings        `json:"settings,omitempty"`
+	Rewrites        []*Rewrites      `json:"rewrites,omitempty"`
 }
 
 // newProfileRequest represents the response from a new profile request.

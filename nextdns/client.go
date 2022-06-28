@@ -51,6 +51,9 @@ type Client struct {
 	Security     SecurityService
 	SecurityTlds SecurityTldsService
 
+	// Services for the Rewrites.
+	Rewrites RewritesService
+
 	// Debug mode for the HTTP requests.
 	Debug bool
 }
@@ -152,6 +155,9 @@ func New(opts ...ClientOption) (*Client, error) {
 	// Initialize the services for the Security.
 	c.Security = NewSecurityService(c)
 	c.SecurityTlds = NewSecurityTldsService(c)
+
+	// Initialize the services for the Rewrites.
+	c.Rewrites = NewRewritesService(c)
 
 	return c, nil
 }
