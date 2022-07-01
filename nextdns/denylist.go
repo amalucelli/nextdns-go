@@ -70,8 +70,7 @@ func (s *denylistService) Create(ctx context.Context, request *CreateDenylistReq
 		return errors.Wrap(err, "error creating request to create an deny list")
 	}
 
-	response := denylistResponse{}
-	err = s.client.do(ctx, req, &response)
+	err = s.client.do(ctx, req, nil)
 	if err != nil {
 		return errors.Wrap(err, "error making a request to create an deny list")
 	}
@@ -104,8 +103,7 @@ func (s *denylistService) Update(ctx context.Context, request *UpdateDenylistReq
 		return errors.Wrap(err, fmt.Sprintf("error creating request to update the deny list id: %s", request.ID))
 	}
 
-	response := denylistResponse{}
-	err = s.client.do(ctx, req, &response)
+	err = s.client.do(ctx, req, nil)
 	if err != nil {
 		return errors.Wrap(err, fmt.Sprintf("error making a request to update the deny list id: %s", request.ID))
 	}

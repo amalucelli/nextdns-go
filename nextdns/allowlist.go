@@ -70,8 +70,7 @@ func (s *allowlistService) Create(ctx context.Context, request *CreateAllowlistR
 		return errors.Wrap(err, "error creating request to create an allow list")
 	}
 
-	response := allowlistResponse{}
-	err = s.client.do(ctx, req, &response)
+	err = s.client.do(ctx, req, nil)
 	if err != nil {
 		return errors.Wrap(err, "error making a request to create an allow list")
 	}
@@ -104,8 +103,7 @@ func (s *allowlistService) Update(ctx context.Context, request *UpdateAllowlistR
 		return errors.Wrap(err, fmt.Sprintf("error creating request to update the allow list id: %s", request.ID))
 	}
 
-	response := allowlistResponse{}
-	err = s.client.do(ctx, req, &response)
+	err = s.client.do(ctx, req, nil)
 	if err != nil {
 		return errors.Wrap(err, fmt.Sprintf("error making a request to update the allow list id: %s", request.ID))
 	}
