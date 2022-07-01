@@ -187,13 +187,17 @@ func (c *Client) handleResponse(ctx context.Context, res *http.Response, v inter
 		return err
 	}
 
+	if c.Debug {
+		if string(out) == "" {
+			fmt.Printf("[DEBUG] RESPONSE: StatusCode:%d\n", res.StatusCode)
+		} else {
+			fmt.Printf("[DEBUG] RESPONSE: StatusCode:%d, Body:%v\n", res.StatusCode, string(out))
+		}
+	}
+
 	// If there is no response body, then we don't need to do anything.
 	if res.StatusCode == http.StatusNoContent {
 		return nil
-	}
-
-	if c.Debug {
-		fmt.Printf("[DEBUG] RESPONSE: StatusCode:%d, Body:%v\n", res.StatusCode, string(out))
 	}
 
 	// Sets some default additional informations that can be used by the client to debug the error.
@@ -303,7 +307,7 @@ func (c *Client) newRequest(method string, path string, body interface{}) (*http
 			}
 		}
 		if c.Debug {
-			fmt.Printf("[DEBUG] REQUEST: Method:%s, URL:%s, Body:%v\n", method, u.String(), buf.String())
+			fmt.Printf("[DEBUG] REQUEST: Method:%s, URL:%s, Body:%v", method, u.String(), buf.String())
 		}
 		req, err = http.NewRequest(method, u.String(), buf)
 		if err != nil {
