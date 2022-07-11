@@ -166,9 +166,6 @@ func New(opts ...ClientOption) (*Client, error) {
 func (c *Client) do(ctx context.Context, req *http.Request, v interface{}) error {
 	req = req.WithContext(ctx)
 
-	// Sets a custom user agent.
-	req.Header.Set("User-Agent", userAgent)
-
 	res, err := c.client.Do(req)
 	if err != nil {
 		return err
@@ -318,6 +315,7 @@ func (c *Client) newRequest(method string, path string, body interface{}) (*http
 	}
 
 	req.Header.Set("Accept", contentType)
+	req.Header.Set("User-Agent", userAgent)
 	return req, nil
 }
 
