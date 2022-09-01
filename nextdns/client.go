@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -179,7 +179,7 @@ func (c *Client) do(ctx context.Context, req *http.Request, v interface{}) error
 // The goal is to handle the common errors that can occur when making a request to the NextDNS API,
 // and also provide custom error responses for the client.
 func (c *Client) handleResponse(ctx context.Context, res *http.Response, v interface{}) error {
-	out, err := ioutil.ReadAll(res.Body)
+	out, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
