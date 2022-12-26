@@ -4,7 +4,7 @@ linters:
   - errorlint
   - errcheck
   - errorlint
-  - deadcode
+  - unused
   - godot
   - goerr113
   - gofmt
