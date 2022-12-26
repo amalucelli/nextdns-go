@@ -33,6 +33,7 @@ type Client struct {
 	Denylist  DenylistService
 
 	// Services for the ParentalControl.
+	ParentalControl           ParentalControlService
 	ParentalControlServices   ParentalControlServicesService
 	ParentalControlCategories ParentalControlCategoriesService
 
@@ -138,6 +139,7 @@ func New(opts ...ClientOption) (*Client, error) {
 	c.Denylist = NewDenylistService(c)
 
 	// Initialize the services for the ParentalControl.
+	c.ParentalControl = NewParentalControlService(c)
 	c.ParentalControlServices = NewParentalControlServicesService(c)
 	c.ParentalControlCategories = NewParentalControlCategoriesService(c)
 
