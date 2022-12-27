@@ -11,10 +11,34 @@ import (
 // parentalControlAPIPath is the HTTP path for the parental control settings API.
 const parentalControlAPIPath = "parentalControl"
 
+// ParentalControlRecreationInterval represents the start and end time of a parental control recreation interval.
+type ParentalControlRecreationInterval struct {
+	Start string `json:"start"`
+	End   string `json:"end"`
+}
+
+// ParentalControlRecreationTimes represents the days and times of the week when the parental control is active.
+type ParentalControlRecreationTimes struct {
+	Monday    *ParentalControlRecreationInterval `json:"monday,omitempty"`
+	Tuesday   *ParentalControlRecreationInterval `json:"tuesday,omitempty"`
+	Wednesday *ParentalControlRecreationInterval `json:"wednesday,omitempty"`
+	Thursday  *ParentalControlRecreationInterval `json:"thursday,omitempty"`
+	Friday    *ParentalControlRecreationInterval `json:"friday,omitempty"`
+	Saturday  *ParentalControlRecreationInterval `json:"saturday,omitempty"`
+	Sunday    *ParentalControlRecreationInterval `json:"sunday,omitempty"`
+}
+
+// ParentalControlRecreation represents the parental control recreation of a profile.
+type ParentalControlRecreation struct {
+	Times    *ParentalControlRecreationTimes `json:"times"`
+	Timezone string                          `json:"timezone"`
+}
+
 // ParentalControl represents the parental control settings of a profile.
 type ParentalControl struct {
 	Services              []*ParentalControlServices   `json:"services,omitempty"`
 	Categories            []*ParentalControlCategories `json:"categories,omitempty"`
+	Recreation            *ParentalControlRecreation   `json:"recreation,omitempty"`
 	SafeSearch            bool                         `json:"safeSearch"`
 	YoutubeRestrictedMode bool                         `json:"youtubeRestrictedMode"`
 	BlockBypass           bool                         `json:"blockBypass"`
