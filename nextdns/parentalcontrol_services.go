@@ -13,8 +13,9 @@ const parentalControlServicesAPIPath = "parentalControl/services"
 
 // ParentalControlServices represents the parental control services of a profile.
 type ParentalControlServices struct {
-	ID     string `json:"id,omitempty"`
-	Active bool   `json:"active"`
+	ID         string `json:"id,omitempty"`
+	Active     bool   `json:"active"`
+	Recreation bool   `json:"recreation"`
 }
 
 // CreateParentalControlServicesRequest encapsulates the request for creating a parental control services list.

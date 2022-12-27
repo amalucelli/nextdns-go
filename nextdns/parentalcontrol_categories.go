@@ -13,8 +13,9 @@ const parentalControlCategoriesAPIPath = "parentalControl/categories"
 
 // ParentalControlCategories represents the parental control categories of a profile.
 type ParentalControlCategories struct {
-	ID     string `json:"id,omitempty"`
-	Active bool   `json:"active"`
+	ID         string `json:"id,omitempty"`
+	Active     bool   `json:"active"`
+	Recreation bool   `json:"recreation"`
 }
 
 // CreateParentalControlCategoriesRequest encapsulates the request for creating a parental control categories list.
