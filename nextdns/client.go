@@ -306,7 +306,11 @@ func (c *Client) newRequest(method string, path string, body interface{}) (*http
 			}
 		}
 		if c.Debug {
-			fmt.Printf("[DEBUG] REQUEST: Method:%s, URL:%s, Body:%v", method, u.String(), buf.String())
+			if buf.String() == "" {
+				fmt.Printf("[DEBUG] REQUEST: Method:%s, URL:%s\n", method, u.String())
+			} else {
+				fmt.Printf("[DEBUG] REQUEST: Method:%s, URL:%s, Body:%s\n", method, u.String(), strings.TrimSuffix(buf.String(), "\n"))
+			}
 		}
 		req, err = http.NewRequest(method, u.String(), buf)
 		if err != nil {
