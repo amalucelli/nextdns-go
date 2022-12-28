@@ -14,9 +14,15 @@ const rewritesAPIPath = "rewrites"
 // Rewrites represents the rewrite list of a profile.
 type Rewrites struct {
 	ID      string `json:"id,omitempty"`
-	Name    string `json:"name,omitempty"`
+	Name    string `json:"name"`
 	Type    string `json:"type,omitempty"`
-	Content string `json:"content,omitempty"`
+	Content string `json:"content"`
+}
+
+// CreateRewritesRequest encapsulates the request for creating a new rewrite.
+type CreateRewritesRequest struct {
+	ProfileID string
+	Rewrites  *Rewrites
 }
 
 // GetRewritesRequest encapsulates the request for getting an rewrites.
@@ -24,14 +30,27 @@ type GetRewritesRequest struct {
 	ProfileID string
 }
 
+// DeleteRewritesRequest encapsulates the request for deleting a rewrite.
+type DeleteRewritesRequest struct {
+	ProfileID string
+	ID        string
+}
+
 // RewritesService is an interface for communicating with the NextDNS rewrites API endpoint.
 type RewritesService interface {
+	Create(context.Context, *CreateRewritesRequest) (string, error)
 	Get(context.Context, *GetRewritesRequest) ([]*Rewrites, error)
+	Delete(context.Context, *DeleteRewritesRequest) error
 }
 
 // rewritesResponse represents the rewrites response.
 type rewritesResponse struct {
 	Rewrites []*Rewrites `json:"data"`
+}
+
+// createRewritesResponse represents the response when creating a rewrite from the NextDNS API.
+type createRewritesResponse struct {
+	Rewrites *Rewrites `json:"data"`
 }
 
 // privacyService represents the NextDNS rewrites service.
@@ -49,6 +68,24 @@ func NewRewritesService(client *Client) *rewritesService {
 	}
 }
 
+// Create creates a rewrite and returns its ID.
+func (s *rewritesService) Create(ctx context.Context, request *CreateRewritesRequest) (string, error) {
+	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), rewritesAPIPath)
+
+	req, err := s.client.newRequest(http.MethodPost, path, request.Rewrites)
+	if err != nil {
+		return "", errors.Wrap(err, "error creating request to create a rewrite")
+	}
+
+	response := &createRewritesResponse{}
+	err = s.client.do(ctx, req, &response)
+	if err != nil {
+		return "", errors.Wrap(err, "error making a request to create a rewrite")
+	}
+
+	return response.Rewrites.ID, nil
+}
+
 // Get returns the rewrites of a profile.
 func (s *rewritesService) Get(ctx context.Context, request *GetRewritesRequest) ([]*Rewrites, error) {
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), rewritesAPIPath)
@@ -64,4 +101,25 @@ func (s *rewritesService) Get(ctx context.Context, request *GetRewritesRequest) 
 	}
 
 	return response.Rewrites, nil
+}
+
+// Delete deletes a profile.
+func (s *rewritesService) Delete(ctx context.Context, request *DeleteRewritesRequest) error {
+	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), rewritesIDAPIPath(request.ID))
+	req, err := s.client.newRequest(http.MethodDelete, path, nil)
+	if err != nil {
+		return errors.Wrap(err, "error creating request to delete the rewrite")
+	}
+
+	err = s.client.do(ctx, req, nil)
+	if err != nil {
+		return errors.Wrap(err, "error making a request to delete the rewrite")
+	}
+
+	return err
+}
+
+// rewritesIDAPIPath returns the HTTP path for the rewrites API.
+func rewritesIDAPIPath(id string) string {
+	return fmt.Sprintf("%s/%s", rewritesAPIPath, id)
 }
