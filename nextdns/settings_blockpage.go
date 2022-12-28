@@ -13,7 +13,7 @@ const settingsBlockPageAPIPath = "settings/blockPage"
 
 // SettingsBlockPage represents the settings block page of a profile.
 type SettingsBlockPage struct {
-	Enabled bool `json:"enable"`
+	Enabled bool `json:"enabled"`
 }
 
 // GetSettingsBlockPageRequest encapsulates the request for getting the settings block page of a profile.
