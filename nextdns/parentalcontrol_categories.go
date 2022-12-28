@@ -31,15 +31,15 @@ type UpdateParentalControlCategoriesRequest struct {
 	ParentalControlCategories *ParentalControlCategories
 }
 
-// GetParentalControlCategoriesRequest encapsulates the request for getting a parental control categories list.
-type GetParentalControlCategoriesRequest struct {
+// ListParentalControlCategoriesRequest encapsulates the request for getting a parental control categories list.
+type ListParentalControlCategoriesRequest struct {
 	ProfileID string
 }
 
 // ParentalControlCategoriesService is an interface for communicating with the NextDNS parental control categories API endpoint.
 type ParentalControlCategoriesService interface {
 	Create(context.Context, *CreateParentalControlCategoriesRequest) error
-	Get(context.Context, *GetParentalControlCategoriesRequest) ([]*ParentalControlCategories, error)
+	List(context.Context, *ListParentalControlCategoriesRequest) ([]*ParentalControlCategories, error)
 	Update(context.Context, *UpdateParentalControlCategoriesRequest) error
 }
 
@@ -80,18 +80,18 @@ func (s *parentalControlCategoriesService) Create(ctx context.Context, request *
 	return nil
 }
 
-// Get returns a parental control categories list.
-func (s *parentalControlCategoriesService) Get(ctx context.Context, request *GetParentalControlCategoriesRequest) ([]*ParentalControlCategories, error) {
+// List returns a parental control categories list.
+func (s *parentalControlCategoriesService) List(ctx context.Context, request *ListParentalControlCategoriesRequest) ([]*ParentalControlCategories, error) {
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), parentalControlCategoriesAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
-		return nil, errors.Wrap(err, "error creating request to get the parental control categories")
+		return nil, errors.Wrap(err, "error creating request to list the parental control categories")
 	}
 
 	response := parentalControlCategoriesResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return nil, errors.Wrap(err, "error making a request to get the parental control categories")
+		return nil, errors.Wrap(err, "error making a request to list the parental control categories")
 	}
 
 	return response.ParentalControlCategories, nil

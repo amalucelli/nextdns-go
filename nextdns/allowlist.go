@@ -23,8 +23,8 @@ type CreateAllowlistRequest struct {
 	Allowlist []*Allowlist
 }
 
-// GetAllowlistRequest encapsulates the request for getting an allowlist.
-type GetAllowlistRequest struct {
+// ListAllowlistRequest encapsulates the request for getting an allowlist.
+type ListAllowlistRequest struct {
 	ProfileID string
 }
 
@@ -38,7 +38,7 @@ type UpdateAllowlistRequest struct {
 // AllowlistService is an interface for communicating with the NextDNS allowlist API endpoint.
 type AllowlistService interface {
 	Create(context.Context, *CreateAllowlistRequest) error
-	Get(context.Context, *GetAllowlistRequest) ([]*Allowlist, error)
+	List(context.Context, *ListAllowlistRequest) ([]*Allowlist, error)
 	Update(context.Context, *UpdateAllowlistRequest) error
 }
 
@@ -78,18 +78,18 @@ func (s *allowlistService) Create(ctx context.Context, request *CreateAllowlistR
 	return nil
 }
 
-// Get returns the allowlist of a profile.
-func (s *allowlistService) Get(ctx context.Context, request *GetAllowlistRequest) ([]*Allowlist, error) {
+// List returns the allowlist of a profile.
+func (s *allowlistService) List(ctx context.Context, request *ListAllowlistRequest) ([]*Allowlist, error) {
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), allowlistAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
-		return nil, errors.Wrap(err, "error creating request to get the allow list")
+		return nil, errors.Wrap(err, "error creating request to list the allow list")
 	}
 
 	response := allowlistResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return nil, errors.Wrap(err, "error making a request to get the allow list")
+		return nil, errors.Wrap(err, "error making a request to list the allow list")
 	}
 
 	return response.Allowlist, nil

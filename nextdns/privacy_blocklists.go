@@ -27,15 +27,15 @@ type CreatePrivacyBlocklistsRequest struct {
 	PrivacyBlocklists []*PrivacyBlocklists
 }
 
-// GetPrivacyBlocklistsRequest encapsulates the request for getting the privacy blocklist.
-type GetPrivacyBlocklistsRequest struct {
+// ListPrivacyBlocklistsRequest encapsulates the request for getting the privacy blocklist.
+type ListPrivacyBlocklistsRequest struct {
 	ProfileID string
 }
 
 // PrivacyBlocklistsService is an interface for communicating with the NextDNS privacy blocklist API endpoint.
 type PrivacyBlocklistsService interface {
 	Create(context.Context, *CreatePrivacyBlocklistsRequest) error
-	Get(context.Context, *GetPrivacyBlocklistsRequest) ([]*PrivacyBlocklists, error)
+	List(context.Context, *ListPrivacyBlocklistsRequest) ([]*PrivacyBlocklists, error)
 }
 
 // privacyBlocklistsResponse represents the NextDNS privacy blocklist service.
@@ -75,18 +75,18 @@ func (s *privacyBlocklistsService) Create(ctx context.Context, request *CreatePr
 	return nil
 }
 
-// Get returns the privacy blocklist for a profile.
-func (s *privacyBlocklistsService) Get(ctx context.Context, request *GetPrivacyBlocklistsRequest) ([]*PrivacyBlocklists, error) {
+// List returns the privacy blocklist for a profile.
+func (s *privacyBlocklistsService) List(ctx context.Context, request *ListPrivacyBlocklistsRequest) ([]*PrivacyBlocklists, error) {
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), privacyBlocklistsAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
-		return nil, errors.Wrap(err, "error creating request to get the privacy blocklist")
+		return nil, errors.Wrap(err, "error creating request to list the privacy blocklist")
 	}
 
 	response := privacyBlocklistsResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return nil, errors.Wrap(err, "error making a request to get the privacy blocklist")
+		return nil, errors.Wrap(err, "error making a request to list the privacy blocklist")
 	}
 
 	return response.PrivacyBlocklists, nil

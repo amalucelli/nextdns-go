@@ -22,15 +22,15 @@ type CreateSecurityTldsRequest struct {
 	SecurityTlds []*SecurityTlds
 }
 
-// GetSecurityTldsRequest encapsulates the request for getting a security TLDs list.
-type GetSecurityTldsRequest struct {
+// ListSecurityTldsRequest encapsulates the request for getting a security TLDs list.
+type ListSecurityTldsRequest struct {
 	ProfileID string
 }
 
 // SecurityTldsService is an interface for communicating with the NextDNS security TLDs API endpoint.
 type SecurityTldsService interface {
 	Create(context.Context, *CreateSecurityTldsRequest) error
-	Get(context.Context, *GetSecurityTldsRequest) ([]*SecurityTlds, error)
+	List(context.Context, *ListSecurityTldsRequest) ([]*SecurityTlds, error)
 }
 
 // securityTldsResponse represents the security TLDs response.
@@ -70,18 +70,18 @@ func (s *securityTldsService) Create(ctx context.Context, request *CreateSecurit
 	return nil
 }
 
-// Get returns a security TLDs list.
-func (s *securityTldsService) Get(ctx context.Context, request *GetSecurityTldsRequest) ([]*SecurityTlds, error) {
+// List returns a security TLDs list.
+func (s *securityTldsService) List(ctx context.Context, request *ListSecurityTldsRequest) ([]*SecurityTlds, error) {
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), securityTldsAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
-		return nil, errors.Wrap(err, "error creating request to get the security tlds list")
+		return nil, errors.Wrap(err, "error creating request to list the security tlds list")
 	}
 
 	response := securityTldsResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return nil, errors.Wrap(err, "error making a request to get the security tlds list")
+		return nil, errors.Wrap(err, "error making a request to list the security tlds list")
 	}
 
 	return response.SecurityTlds, nil

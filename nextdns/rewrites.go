@@ -25,8 +25,8 @@ type CreateRewritesRequest struct {
 	Rewrites  *Rewrites
 }
 
-// GetRewritesRequest encapsulates the request for getting an rewrites.
-type GetRewritesRequest struct {
+// ListRewritesRequest encapsulates the request for getting an rewrites.
+type ListRewritesRequest struct {
 	ProfileID string
 }
 
@@ -39,7 +39,7 @@ type DeleteRewritesRequest struct {
 // RewritesService is an interface for communicating with the NextDNS rewrites API endpoint.
 type RewritesService interface {
 	Create(context.Context, *CreateRewritesRequest) (string, error)
-	Get(context.Context, *GetRewritesRequest) ([]*Rewrites, error)
+	List(context.Context, *ListRewritesRequest) ([]*Rewrites, error)
 	Delete(context.Context, *DeleteRewritesRequest) error
 }
 
@@ -86,18 +86,18 @@ func (s *rewritesService) Create(ctx context.Context, request *CreateRewritesReq
 	return response.Rewrites.ID, nil
 }
 
-// Get returns the rewrites of a profile.
-func (s *rewritesService) Get(ctx context.Context, request *GetRewritesRequest) ([]*Rewrites, error) {
+// List returns the rewrites of a profile.
+func (s *rewritesService) List(ctx context.Context, request *ListRewritesRequest) ([]*Rewrites, error) {
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), rewritesAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
-		return nil, errors.Wrap(err, "error creating request to get the rewrite list")
+		return nil, errors.Wrap(err, "error creating request to list the rewrite list")
 	}
 
 	response := rewritesResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return nil, errors.Wrap(err, "error making a request to get the rewrite list")
+		return nil, errors.Wrap(err, "error making a request to list the rewrite list")
 	}
 
 	return response.Rewrites, nil

@@ -55,7 +55,7 @@ func TestAllowlistGet(t *testing.T) {
 
 	ctx := context.Background()
 
-	list, err := client.Allowlist.Get(ctx, &GetAllowlistRequest{
+	list, err := client.Allowlist.List(ctx, &ListAllowlistRequest{
 		ProfileID: "abc123",
 	})
 	want := []*Allowlist{

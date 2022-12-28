@@ -32,14 +32,14 @@ type UpdateParentalControlServicesRequest struct {
 }
 
 // GetParentalControlServicesRequest encapsulates the request for getting a parental control services list.
-type GetParentalControlServicesRequest struct {
+type ListParentalControlServicesRequest struct {
 	ProfileID string
 }
 
 // ParentalControlServicesService is an interface for communicating with the NextDNS parental control services API endpoint.
 type ParentalControlServicesService interface {
 	Create(context.Context, *CreateParentalControlServicesRequest) error
-	Get(context.Context, *GetParentalControlServicesRequest) ([]*ParentalControlServices, error)
+	List(context.Context, *ListParentalControlServicesRequest) ([]*ParentalControlServices, error)
 	Update(context.Context, *UpdateParentalControlServicesRequest) error
 }
 
@@ -80,18 +80,18 @@ func (s *parentalControlServicesService) Create(ctx context.Context, request *Cr
 	return nil
 }
 
-// Get returns a parental control services list.
-func (s *parentalControlServicesService) Get(ctx context.Context, request *GetParentalControlServicesRequest) ([]*ParentalControlServices, error) {
+// List returns a parental control services list.
+func (s *parentalControlServicesService) List(ctx context.Context, request *ListParentalControlServicesRequest) ([]*ParentalControlServices, error) {
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), parentalControlServicesAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
-		return nil, errors.Wrap(err, "error creating request to get the parental control services")
+		return nil, errors.Wrap(err, "error creating request to list the parental control services")
 	}
 
 	response := parentalControlServicesResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return nil, errors.Wrap(err, "error making a request to get the parental control services")
+		return nil, errors.Wrap(err, "error making a request to list the parental control services")
 	}
 
 	return response.ParentalControlServices, nil

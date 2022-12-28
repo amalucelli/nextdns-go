@@ -55,7 +55,7 @@ func TestDenylistGet(t *testing.T) {
 
 	ctx := context.Background()
 
-	list, err := client.Denylist.Get(ctx, &GetDenylistRequest{
+	list, err := client.Denylist.List(ctx, &ListDenylistRequest{
 		ProfileID: "abc123",
 	})
 	want := []*Denylist{

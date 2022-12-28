@@ -22,15 +22,15 @@ type CreatePrivacyNativesRequest struct {
 	PrivacyNatives []*PrivacyNatives
 }
 
-// GetPrivacyNativesRequest encapsulates the request for getting the privacy native tracking protection list.
-type GetPrivacyNativesRequest struct {
+// ListPrivacyNativesRequest encapsulates the request for getting the privacy native tracking protection list.
+type ListPrivacyNativesRequest struct {
 	ProfileID string
 }
 
 // PrivacyNativesService is an interface for communicating with the NextDNS privacy native tracking protection API endpoint.
 type PrivacyNativesService interface {
 	Create(context.Context, *CreatePrivacyNativesRequest) error
-	Get(context.Context, *GetPrivacyNativesRequest) ([]*PrivacyNatives, error)
+	List(context.Context, *ListPrivacyNativesRequest) ([]*PrivacyNatives, error)
 }
 
 // privacyNativesResponse represents the NextDNS privacy native tracking protection service.
@@ -70,18 +70,18 @@ func (s *privacyNativesService) Create(ctx context.Context, request *CreatePriva
 	return nil
 }
 
-// Get returns the privacy native tracking protection list.
-func (s *privacyNativesService) Get(ctx context.Context, request *GetPrivacyNativesRequest) ([]*PrivacyNatives, error) {
+// List returns the privacy native tracking protection list.
+func (s *privacyNativesService) List(ctx context.Context, request *ListPrivacyNativesRequest) ([]*PrivacyNatives, error) {
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), privacyNativesAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
-		return nil, errors.Wrap(err, "error creating request to get the privacy native list")
+		return nil, errors.Wrap(err, "error creating request to list the privacy native list")
 	}
 
 	response := privacyNativesResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return nil, errors.Wrap(err, "error making a request to get the privacy native list")
+		return nil, errors.Wrap(err, "error making a request to list the privacy native list")
 	}
 
 	return response.PrivacyNatives, nil

@@ -23,8 +23,8 @@ type CreateDenylistRequest struct {
 	Denylist  []*Denylist
 }
 
-// GetDenylistRequest encapsulates the request for getting a denylist.
-type GetDenylistRequest struct {
+// ListDenylistRequest encapsulates the request for getting a denylist.
+type ListDenylistRequest struct {
 	ProfileID string
 }
 
@@ -38,7 +38,7 @@ type UpdateDenylistRequest struct {
 // DenylistService is an interface for communicating with the NextDNS denylist API endpoint.
 type DenylistService interface {
 	Create(context.Context, *CreateDenylistRequest) error
-	Get(context.Context, *GetDenylistRequest) ([]*Denylist, error)
+	List(context.Context, *ListDenylistRequest) ([]*Denylist, error)
 	Update(context.Context, *UpdateDenylistRequest) error
 }
 
@@ -78,18 +78,18 @@ func (s *denylistService) Create(ctx context.Context, request *CreateDenylistReq
 	return nil
 }
 
-// Get returns the denylist of a profile.
-func (s *denylistService) Get(ctx context.Context, request *GetDenylistRequest) ([]*Denylist, error) {
+// List returns the denylist of a profile.
+func (s *denylistService) List(ctx context.Context, request *ListDenylistRequest) ([]*Denylist, error) {
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), denylistAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
-		return nil, errors.Wrap(err, "error creating request to get the deny list")
+		return nil, errors.Wrap(err, "error creating request to list the deny list")
 	}
 
 	response := denylistResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return nil, errors.Wrap(err, "error making a request to get the deny list")
+		return nil, errors.Wrap(err, "error making a request to list the deny list")
 	}
 
 	return response.Denylist, nil
