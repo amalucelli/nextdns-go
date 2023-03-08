@@ -61,6 +61,7 @@ type Profile struct {
 	Allowlist       []*Allowlist     `json:"allowlist,omitempty"`
 	Settings        *Settings        `json:"settings,omitempty"`
 	Rewrites        []*Rewrites      `json:"rewrites,omitempty"`
+	Setup           *Setup           `json:"setup,omitempty"`
 }
 
 // newProfileRequest represents the response from a new profile request.
