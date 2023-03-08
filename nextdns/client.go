@@ -55,6 +55,10 @@ type Client struct {
 	// Services for the Rewrites.
 	Rewrites RewritesService
 
+	// Services for the Setup.
+	Setup         SetupService
+	SetupLinkedIP SetupLinkedIPService
+
 	// Debug mode for the HTTP requests.
 	Debug bool
 }
@@ -160,6 +164,10 @@ func New(opts ...ClientOption) (*Client, error) {
 
 	// Initialize the services for the Rewrites.
 	c.Rewrites = NewRewritesService(c)
+
+	// Initialize the services for the Setup.
+	c.Setup = NewSetupService(c)
+	c.SetupLinkedIP = NewSetupLinkedIPService(c)
 
 	return c, nil
 }
