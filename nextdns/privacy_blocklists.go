@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"time"
-
-	"github.com/pkg/errors"
 )
 
 // privacyBlocklistsAPIPath is the HTTP path for the privacy blocklist API.
@@ -63,13 +61,13 @@ func (s *privacyBlocklistsService) Create(ctx context.Context, request *CreatePr
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), privacyBlocklistsAPIPath)
 	req, err := s.client.newRequest(http.MethodPut, path, request.PrivacyBlocklists)
 	if err != nil {
-		return errors.Wrap(err, "error creating request to create a privacy blocklist")
+		return fmt.Errorf("error creating request to create a privacy blocklist: %w", err)
 	}
 
 	response := privacyBlocklistsResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return errors.Wrap(err, "error making a request to create a privacy blocklist")
+		return fmt.Errorf("error making a request to create a privacy blocklist: %w", err)
 	}
 
 	return nil
@@ -80,13 +78,13 @@ func (s *privacyBlocklistsService) List(ctx context.Context, request *ListPrivac
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), privacyBlocklistsAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
-		return nil, errors.Wrap(err, "error creating request to list the privacy blocklist")
+		return nil, fmt.Errorf("error creating request to list the privacy blocklist: %w", err)
 	}
 
 	response := privacyBlocklistsResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return nil, errors.Wrap(err, "error making a request to list the privacy blocklist")
+		return nil, fmt.Errorf("error making a request to list the privacy blocklist: %w", err)
 	}
 
 	return response.PrivacyBlocklists, nil

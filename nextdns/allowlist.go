@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-
-	"github.com/pkg/errors"
 )
 
 // allowlistAPIPath is the HTTP path for the allowlist API.
@@ -67,12 +65,12 @@ func (s *allowlistService) Create(ctx context.Context, request *CreateAllowlistR
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), allowlistAPIPath)
 	req, err := s.client.newRequest(http.MethodPut, path, request.Allowlist)
 	if err != nil {
-		return errors.Wrap(err, "error creating request to create an allow list")
+		return fmt.Errorf("error creating request to create an allow list: %w", err)
 	}
 
 	err = s.client.do(ctx, req, nil)
 	if err != nil {
-		return errors.Wrap(err, "error making a request to create an allow list")
+		return fmt.Errorf("error making a request to create an allow list: %w", err)
 	}
 
 	return nil
@@ -83,13 +81,13 @@ func (s *allowlistService) List(ctx context.Context, request *ListAllowlistReque
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), allowlistAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
-		return nil, errors.Wrap(err, "error creating request to list the allow list")
+		return nil, fmt.Errorf("error creating request to list the allow list: %w", err)
 	}
 
 	response := allowlistResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return nil, errors.Wrap(err, "error making a request to list the allow list")
+		return nil, fmt.Errorf("error making a request to list the allow list: %w", err)
 	}
 
 	return response.Allowlist, nil
@@ -100,12 +98,12 @@ func (s *allowlistService) Update(ctx context.Context, request *UpdateAllowlistR
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), allowlistIDAPIPath(request.ID))
 	req, err := s.client.newRequest(http.MethodPatch, path, request.Allowlist)
 	if err != nil {
-		return errors.Wrap(err, fmt.Sprintf("error creating request to update the allow list id: %s", request.ID))
+		return fmt.Errorf("error creating request to update the allow list id %s: %w", request.ID, err)
 	}
 
 	err = s.client.do(ctx, req, nil)
 	if err != nil {
-		return errors.Wrap(err, fmt.Sprintf("error making a request to update the allow list id: %s", request.ID))
+		return fmt.Errorf("error making a request to update the allow list id %s: %w", request.ID, err)
 	}
 
 	return nil

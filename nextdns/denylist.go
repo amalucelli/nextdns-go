@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-
-	"github.com/pkg/errors"
 )
 
 // denylistAPIPath is the HTTP path for the denylist API.
@@ -67,12 +65,12 @@ func (s *denylistService) Create(ctx context.Context, request *CreateDenylistReq
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), denylistAPIPath)
 	req, err := s.client.newRequest(http.MethodPut, path, request.Denylist)
 	if err != nil {
-		return errors.Wrap(err, "error creating request to create an deny list")
+		return fmt.Errorf("error creating request to create an deny list: %w", err)
 	}
 
 	err = s.client.do(ctx, req, nil)
 	if err != nil {
-		return errors.Wrap(err, "error making a request to create an deny list")
+		return fmt.Errorf("error making a request to create an deny list: %w", err)
 	}
 
 	return nil
@@ -83,13 +81,13 @@ func (s *denylistService) List(ctx context.Context, request *ListDenylistRequest
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), denylistAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
-		return nil, errors.Wrap(err, "error creating request to list the deny list")
+		return nil, fmt.Errorf("error creating request to list the deny list: %w", err)
 	}
 
 	response := denylistResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return nil, errors.Wrap(err, "error making a request to list the deny list")
+		return nil, fmt.Errorf("error making a request to list the deny list: %w", err)
 	}
 
 	return response.Denylist, nil
@@ -100,12 +98,12 @@ func (s *denylistService) Update(ctx context.Context, request *UpdateDenylistReq
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), denylistIDAPIPath(request.ID))
 	req, err := s.client.newRequest(http.MethodPatch, path, request.Denylist)
 	if err != nil {
-		return errors.Wrap(err, fmt.Sprintf("error creating request to update the deny list id: %s", request.ID))
+		return fmt.Errorf("error creating request to update the deny list id %s: %w", request.ID, err)
 	}
 
 	err = s.client.do(ctx, req, nil)
 	if err != nil {
-		return errors.Wrap(err, fmt.Sprintf("error making a request to update the deny list id: %s", request.ID))
+		return fmt.Errorf("error making a request to update the deny list id %s: %w", request.ID, err)
 	}
 
 	return nil

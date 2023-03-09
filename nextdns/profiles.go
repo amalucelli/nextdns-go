@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-
-	"github.com/pkg/errors"
 )
 
 // profilesService is the HTTP path for the profiles API.
@@ -112,13 +110,13 @@ func NewProfilesService(client *Client) *profilesService {
 func (s *profilesService) List(ctx context.Context, request *ListProfileRequest) ([]*Profiles, error) {
 	req, err := s.client.newRequest(http.MethodGet, profilesAPIPath, nil)
 	if err != nil {
-		return nil, errors.Wrap(err, "error creating request to list the profiles")
+		return nil, fmt.Errorf("error creating request to list the profiles")
 	}
 
 	response := profilesResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return nil, errors.Wrap(err, "error making a request to list the profiles")
+		return nil, fmt.Errorf("error making a request to list the profiles")
 	}
 
 	return response.Profiles, nil
@@ -128,13 +126,13 @@ func (s *profilesService) List(ctx context.Context, request *ListProfileRequest)
 func (s *profilesService) Create(ctx context.Context, request *CreateProfileRequest) (string, error) {
 	req, err := s.client.newRequest(http.MethodPost, profilesAPIPath, request)
 	if err != nil {
-		return "", errors.Wrap(err, "error creating request to create a profile")
+		return "", fmt.Errorf("error creating request to create a profile: %w", err)
 	}
 
 	response := &newProfileResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return "", errors.Wrap(err, "error making a request to create a profile")
+		return "", fmt.Errorf("error making a request to create a profile: %w", err)
 	}
 
 	return response.Profile.ID, nil
@@ -145,13 +143,13 @@ func (s *profilesService) Update(ctx context.Context, request *UpdateProfileRequ
 	path := fmt.Sprintf("%s/%s", profilesAPIPath, request.ProfileID)
 	req, err := s.client.newRequest(http.MethodPatch, path, request.Profile)
 	if err != nil {
-		return errors.Wrap(err, "error creating request to update the profile")
+		return fmt.Errorf("error creating request to update the profile: %w", err)
 	}
 
 	response := profileResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return errors.Wrap(err, "error making a request to update the profile")
+		return fmt.Errorf("error making a request to update the profile: %w", err)
 	}
 
 	return nil
@@ -162,13 +160,13 @@ func (s *profilesService) Get(ctx context.Context, request *GetProfileRequest) (
 	path := fmt.Sprintf("%s/%s", profilesAPIPath, request.ProfileID)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
-		return nil, errors.Wrap(err, "error creating request to get the profile")
+		return nil, fmt.Errorf("error creating request to get the profile: %w", err)
 	}
 
 	response := profileResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return nil, errors.Wrap(err, "error making a request to get the profile")
+		return nil, fmt.Errorf("error making a request to get the profile: %w", err)
 	}
 
 	return response.Profile, nil
@@ -179,12 +177,12 @@ func (s *profilesService) Delete(ctx context.Context, request *DeleteProfileRequ
 	path := fmt.Sprintf("%s/%s", profilesAPIPath, request.ProfileID)
 	req, err := s.client.newRequest(http.MethodDelete, path, nil)
 	if err != nil {
-		return errors.Wrap(err, "error creating request to delete the profile")
+		return fmt.Errorf("error creating request to delete the profile: %w", err)
 	}
 
 	err = s.client.do(ctx, req, nil)
 	if err != nil {
-		return errors.Wrap(err, "error making a request to delete the profile")
+		return fmt.Errorf("error making a request to delete the profile: %w", err)
 	}
 
 	return err

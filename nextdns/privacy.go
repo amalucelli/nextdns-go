@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-
-	"github.com/pkg/errors"
 )
 
 // privacyAPIPath is the HTTP path for the privacy settings API.
@@ -61,13 +59,13 @@ func (s *privacyService) Get(ctx context.Context, request *GetPrivacyRequest) (*
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), privacyAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
-		return nil, errors.Wrap(err, "error creating request to get the privacy")
+		return nil, fmt.Errorf("error creating request to get the privacy: %w", err)
 	}
 
 	response := privacyResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return nil, errors.Wrap(err, "error making a request to get the privacy")
+		return nil, fmt.Errorf("error making a request to get the privacy: %w", err)
 	}
 
 	return response.Privacy, nil
@@ -78,13 +76,13 @@ func (s *privacyService) Update(ctx context.Context, request *UpdatePrivacyReque
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), privacyAPIPath)
 	req, err := s.client.newRequest(http.MethodPatch, path, request.Privacy)
 	if err != nil {
-		return errors.Wrap(err, "error creating request to update the privacy")
+		return fmt.Errorf("error creating request to update the privacy: %w", err)
 	}
 
 	response := privacyResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return errors.Wrap(err, "error making a request to update the privacy")
+		return fmt.Errorf("error making a request to update the privacy: %w", err)
 	}
 
 	return nil

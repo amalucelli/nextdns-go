@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-
-	"github.com/pkg/errors"
 )
 
 // settingsLogsAPIPath is the HTTP path for the settings logs API.
@@ -67,13 +65,13 @@ func (s *settingsLogsService) Get(ctx context.Context, request *GetSettingsLogsR
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), settingsLogsAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
-		return nil, errors.Wrap(err, "error creating request to get the logs settings")
+		return nil, fmt.Errorf("error creating request to get the logs settings: %w", err)
 	}
 
 	response := settingsLogsResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return nil, errors.Wrap(err, "error making a request to get the logs settings")
+		return nil, fmt.Errorf("error making a request to get the logs settings: %w", err)
 	}
 
 	return response.SettingsLogs, nil
@@ -84,13 +82,13 @@ func (s *settingsLogsService) Update(ctx context.Context, request *UpdateSetting
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), settingsLogsAPIPath)
 	req, err := s.client.newRequest(http.MethodPatch, path, request.SettingsLogs)
 	if err != nil {
-		return errors.Wrap(err, "error creating request to update the logs settings")
+		return fmt.Errorf("error creating request to update the logs settings: %w", err)
 	}
 
 	response := settingsLogsResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return errors.Wrap(err, "error making a request to update the logs settings")
+		return fmt.Errorf("error making a request to update the logs settings: %w", err)
 	}
 
 	return nil
