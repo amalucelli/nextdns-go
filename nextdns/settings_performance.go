@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-
-	"github.com/pkg/errors"
 )
 
 // settingsPerformanceAPIPath is the HTTP path for the settings performance API.
@@ -60,13 +58,13 @@ func (s *settingsPerformanceService) Get(ctx context.Context, request *GetSettin
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), settingsPerformanceAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
-		return nil, errors.Wrap(err, "error creating request to get the performance settings")
+		return nil, fmt.Errorf("error creating request to get the performance settings: %w", err)
 	}
 
 	response := settingsPerformanceResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return nil, errors.Wrap(err, "error making a request to get the performance settings")
+		return nil, fmt.Errorf("error making a request to get the performance settings: %w", err)
 	}
 
 	return response.SettingsPerformance, nil
@@ -77,13 +75,13 @@ func (s *settingsPerformanceService) Update(ctx context.Context, request *Update
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), settingsPerformanceAPIPath)
 	req, err := s.client.newRequest(http.MethodPatch, path, request.SettingsPerformance)
 	if err != nil {
-		return errors.Wrap(err, "error creating request to update the performance settings")
+		return fmt.Errorf("error creating request to update the performance settings: %w", err)
 	}
 
 	response := settingsPerformanceResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return errors.Wrap(err, "error making a request to update the performance settings")
+		return fmt.Errorf("error making a request to update the performance settings: %w", err)
 	}
 
 	return nil

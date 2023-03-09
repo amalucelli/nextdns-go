@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-
-	"github.com/pkg/errors"
 )
 
 // securityTldsAPIPath is the HTTP path for the security TLDs API.
@@ -58,13 +56,13 @@ func (s *securityTldsService) Create(ctx context.Context, request *CreateSecurit
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), securityTldsAPIPath)
 	req, err := s.client.newRequest(http.MethodPut, path, request.SecurityTlds)
 	if err != nil {
-		return errors.Wrap(err, "error creating request to create a security tlds list")
+		return fmt.Errorf("error creating request to create a security tlds list: %w", err)
 	}
 
 	response := securityTldsResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return errors.Wrap(err, "error making a request to create a security tlds list")
+		return fmt.Errorf("error making a request to create a security tlds list: %w", err)
 	}
 
 	return nil
@@ -75,13 +73,13 @@ func (s *securityTldsService) List(ctx context.Context, request *ListSecurityTld
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), securityTldsAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
-		return nil, errors.Wrap(err, "error creating request to list the security tlds list")
+		return nil, fmt.Errorf("error creating request to list the security tlds list: %w", err)
 	}
 
 	response := securityTldsResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return nil, errors.Wrap(err, "error making a request to list the security tlds list")
+		return nil, fmt.Errorf("error making a request to list the security tlds list: %w", err)
 	}
 
 	return response.SecurityTlds, nil

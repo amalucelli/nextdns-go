@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-
-	"github.com/pkg/errors"
 )
 
 // setupLinkedIPAPIPath is the HTTP path for the setup linked IP API.
@@ -60,13 +58,13 @@ func (s *setupLinkedIPService) Get(ctx context.Context, request *GetSetupLinkedI
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), setupLinkedIPAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
-		return nil, errors.Wrap(err, "error creating request to get the setup linked ip settings")
+		return nil, fmt.Errorf("error creating request to get the setup linked ip settings: %w", err)
 	}
 
 	response := setupLinkedIPResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return nil, errors.Wrap(err, "error making a request to get the setup linked ip settings")
+		return nil, fmt.Errorf("error making a request to get the setup linked ip settings: %w", err)
 	}
 
 	return response.SetupLinkedIP, nil
@@ -77,12 +75,12 @@ func (s *setupLinkedIPService) Update(ctx context.Context, request *UpdateSetupL
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), setupLinkedIPAPIPath)
 	req, err := s.client.newRequest(http.MethodPatch, path, request.SetupLinkedIP)
 	if err != nil {
-		return errors.Wrap(err, "error creating request to update the setup linked ip settings")
+		return fmt.Errorf("error creating request to update the setup linked ip settings: %w", err)
 	}
 
 	err = s.client.do(ctx, req, nil)
 	if err != nil {
-		return errors.Wrap(err, "error making a request to update the setup linked ip settings")
+		return fmt.Errorf("error making a request to update the setup linked ip settings: %w", err)
 	}
 
 	return nil

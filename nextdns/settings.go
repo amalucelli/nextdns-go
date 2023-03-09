@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-
-	"github.com/pkg/errors"
 )
 
 // settingsAPIPath is the HTTP path for the settings API.
@@ -61,13 +59,13 @@ func (s *settingsService) Get(ctx context.Context, request *GetSettingsRequest) 
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), settingsAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
-		return nil, errors.Wrap(err, "error creating request to get the settings")
+		return nil, fmt.Errorf("error creating request to get the settings: %w", err)
 	}
 
 	response := settingsResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return nil, errors.Wrap(err, "error making a request to get the settings")
+		return nil, fmt.Errorf("error making a request to get the settings: %w", err)
 	}
 
 	return response.Settings, nil
@@ -78,13 +76,13 @@ func (s *settingsService) Update(ctx context.Context, request *UpdateSettingsReq
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), settingsAPIPath)
 	req, err := s.client.newRequest(http.MethodPatch, path, request.Settings)
 	if err != nil {
-		return errors.Wrap(err, "error creating request to update the settings")
+		return fmt.Errorf("error creating request to update the settings: %w", err)
 	}
 
 	response := settingsResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return errors.Wrap(err, "error making a request to update the settings")
+		return fmt.Errorf("error making a request to update the settings: %w", err)
 	}
 
 	return nil

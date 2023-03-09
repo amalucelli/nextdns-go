@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-
-	"github.com/pkg/errors"
 )
 
 // parentalControlServicesAPIPath is the HTTP path for the parental control services API.
@@ -68,13 +66,13 @@ func (s *parentalControlServicesService) Create(ctx context.Context, request *Cr
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), parentalControlServicesAPIPath)
 	req, err := s.client.newRequest(http.MethodPut, path, request.ParentalControlServices)
 	if err != nil {
-		return errors.Wrap(err, "error creating request to create a parental control services")
+		return fmt.Errorf("error creating request to create a parental control services: %w", err)
 	}
 
 	response := parentalControlServicesResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return errors.Wrap(err, "error making a request to create a parental control services")
+		return fmt.Errorf("error making a request to create a parental control services: %w", err)
 	}
 
 	return nil
@@ -85,13 +83,13 @@ func (s *parentalControlServicesService) List(ctx context.Context, request *List
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), parentalControlServicesAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
-		return nil, errors.Wrap(err, "error creating request to list the parental control services")
+		return nil, fmt.Errorf("error creating request to list the parental control services: %w", err)
 	}
 
 	response := parentalControlServicesResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return nil, errors.Wrap(err, "error making a request to list the parental control services")
+		return nil, fmt.Errorf("error making a request to list the parental control services: %w", err)
 	}
 
 	return response.ParentalControlServices, nil
@@ -102,13 +100,13 @@ func (s *parentalControlServicesService) Update(ctx context.Context, request *Up
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), parentalControlServicesIDAPIPath(request.ID))
 	req, err := s.client.newRequest(http.MethodPatch, path, request.ParentalControlServices)
 	if err != nil {
-		return errors.Wrap(err, "error creating request to update the parental control services")
+		return fmt.Errorf("error creating request to update the parental control services: %w", err)
 	}
 
 	response := parentalControlServicesResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return errors.Wrap(err, "error making a request to update the parental control services")
+		return fmt.Errorf("error making a request to update the parental control services: %w", err)
 	}
 
 	return nil

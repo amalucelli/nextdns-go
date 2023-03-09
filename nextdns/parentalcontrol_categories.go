@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-
-	"github.com/pkg/errors"
 )
 
 // parentalControlCategoriesAPIPath is the HTTP path for the parental control categories API.
@@ -68,13 +66,13 @@ func (s *parentalControlCategoriesService) Create(ctx context.Context, request *
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), parentalControlCategoriesAPIPath)
 	req, err := s.client.newRequest(http.MethodPut, path, request.ParentalControlCategories)
 	if err != nil {
-		return errors.Wrap(err, "error creating request to create a parental control categories")
+		return fmt.Errorf("error creating request to create a parental control categories: %w", err)
 	}
 
 	response := parentalControlCategoriesResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return errors.Wrap(err, "error making a request to create a parental control categories")
+		return fmt.Errorf("error making a request to create a parental control categories: %w", err)
 	}
 
 	return nil
@@ -85,13 +83,13 @@ func (s *parentalControlCategoriesService) List(ctx context.Context, request *Li
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), parentalControlCategoriesAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
-		return nil, errors.Wrap(err, "error creating request to list the parental control categories")
+		return nil, fmt.Errorf("error creating request to list the parental control categories: %w", err)
 	}
 
 	response := parentalControlCategoriesResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return nil, errors.Wrap(err, "error making a request to list the parental control categories")
+		return nil, fmt.Errorf("error making a request to list the parental control categories: %w", err)
 	}
 
 	return response.ParentalControlCategories, nil
@@ -102,13 +100,13 @@ func (s *parentalControlCategoriesService) Update(ctx context.Context, request *
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), parentalControlCategoriesIDAPIPath(request.ID))
 	req, err := s.client.newRequest(http.MethodPatch, path, request.ParentalControlCategories)
 	if err != nil {
-		return errors.Wrap(err, "error creating request to update the parental control categories")
+		return fmt.Errorf("error creating request to update the parental control categories: %w", err)
 	}
 
 	response := parentalControlCategoriesResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return errors.Wrap(err, "error making a request to update the parental control categories")
+		return fmt.Errorf("error making a request to update the parental control categories: %w", err)
 	}
 
 	return nil

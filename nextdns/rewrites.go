@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-
-	"github.com/pkg/errors"
 )
 
 // rewritesAPIPath is the HTTP path for the rewrites API.
@@ -74,13 +72,13 @@ func (s *rewritesService) Create(ctx context.Context, request *CreateRewritesReq
 
 	req, err := s.client.newRequest(http.MethodPost, path, request.Rewrites)
 	if err != nil {
-		return "", errors.Wrap(err, "error creating request to create a rewrite")
+		return "", fmt.Errorf("error creating request to create a rewrite: %w", err)
 	}
 
 	response := &createRewritesResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return "", errors.Wrap(err, "error making a request to create a rewrite")
+		return "", fmt.Errorf("error making a request to create a rewrite: %w", err)
 	}
 
 	return response.Rewrites.ID, nil
@@ -91,13 +89,13 @@ func (s *rewritesService) List(ctx context.Context, request *ListRewritesRequest
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), rewritesAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
-		return nil, errors.Wrap(err, "error creating request to list the rewrite list")
+		return nil, fmt.Errorf("error creating request to list the rewrite list: %w", err)
 	}
 
 	response := rewritesResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return nil, errors.Wrap(err, "error making a request to list the rewrite list")
+		return nil, fmt.Errorf("error making a request to list the rewrite list: %w", err)
 	}
 
 	return response.Rewrites, nil
@@ -108,12 +106,12 @@ func (s *rewritesService) Delete(ctx context.Context, request *DeleteRewritesReq
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), rewritesIDAPIPath(request.ID))
 	req, err := s.client.newRequest(http.MethodDelete, path, nil)
 	if err != nil {
-		return errors.Wrap(err, "error creating request to delete the rewrite")
+		return fmt.Errorf("error creating request to delete the rewrite: %w", err)
 	}
 
 	err = s.client.do(ctx, req, nil)
 	if err != nil {
-		return errors.Wrap(err, "error making a request to delete the rewrite")
+		return fmt.Errorf("error making a request to delete the rewrite: %w", err)
 	}
 
 	return err

@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-
-	"github.com/pkg/errors"
 )
 
 // privacyNativesAPIPath is the HTTP path for the privacy native tracking protection API.
@@ -58,13 +56,13 @@ func (s *privacyNativesService) Create(ctx context.Context, request *CreatePriva
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), privacyNativesAPIPath)
 	req, err := s.client.newRequest(http.MethodPut, path, request.PrivacyNatives)
 	if err != nil {
-		return errors.Wrap(err, "error creating request to create a privacy native list")
+		return fmt.Errorf("error creating request to create a privacy native list: %w", err)
 	}
 
 	response := privacyNativesResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return errors.Wrap(err, "error making a request to create a privacy native list")
+		return fmt.Errorf("error making a request to create a privacy native list: %w", err)
 	}
 
 	return nil
@@ -75,13 +73,13 @@ func (s *privacyNativesService) List(ctx context.Context, request *ListPrivacyNa
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), privacyNativesAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
-		return nil, errors.Wrap(err, "error creating request to list the privacy native list")
+		return nil, fmt.Errorf("error creating request to list the privacy native list: %w", err)
 	}
 
 	response := privacyNativesResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return nil, errors.Wrap(err, "error making a request to list the privacy native list")
+		return nil, fmt.Errorf("error making a request to list the privacy native list: %w", err)
 	}
 
 	return response.PrivacyNatives, nil

@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-
-	"github.com/pkg/errors"
 )
 
 // securityAPIPath is the HTTP path for the security API.
@@ -70,13 +68,13 @@ func (s *securityService) Get(ctx context.Context, request *GetSecurityRequest) 
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), securityAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
-		return nil, errors.Wrap(err, "error creating request to get the security settings")
+		return nil, fmt.Errorf("error creating request to get the security settings: %w", err)
 	}
 
 	response := securityResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return nil, errors.Wrap(err, "error making a request to get the security settings")
+		return nil, fmt.Errorf("error making a request to get the security settings: %w", err)
 	}
 
 	return response.Security, nil
@@ -87,13 +85,13 @@ func (s *securityService) Update(ctx context.Context, request *UpdateSecurityReq
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), securityAPIPath)
 	req, err := s.client.newRequest(http.MethodPatch, path, request.Security)
 	if err != nil {
-		return errors.Wrap(err, "error creating request to update the security settings")
+		return fmt.Errorf("error creating request to update the security settings: %w", err)
 	}
 
 	response := securityResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return errors.Wrap(err, "error making a request to update the security settings")
+		return fmt.Errorf("error making a request to update the security settings: %w", err)
 	}
 
 	return nil

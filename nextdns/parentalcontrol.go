@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-
-	"github.com/pkg/errors"
 )
 
 // parentalControlAPIPath is the HTTP path for the parental control settings API.
@@ -86,13 +84,13 @@ func (s *parentalControlService) Get(ctx context.Context, request *GetParentalCo
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), parentalControlAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
-		return nil, errors.Wrap(err, "error creating request to get the parentalControl")
+		return nil, fmt.Errorf("error creating request to get the parentalControl: %w", err)
 	}
 
 	response := parentalControlResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return nil, errors.Wrap(err, "error making a request to get the parentalControl")
+		return nil, fmt.Errorf("error making a request to get the parentalControl: %w", err)
 	}
 
 	return response.ParentalControl, nil
@@ -103,13 +101,13 @@ func (s *parentalControlService) Update(ctx context.Context, request *UpdatePare
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), parentalControlAPIPath)
 	req, err := s.client.newRequest(http.MethodPatch, path, request.ParentalControl)
 	if err != nil {
-		return errors.Wrap(err, "error creating request to update the parentalControl")
+		return fmt.Errorf("error creating request to update the parentalControl: %w", err)
 	}
 
 	response := parentalControlResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return errors.Wrap(err, "error making a request to update the parentalControl")
+		return fmt.Errorf("error making a request to update the parentalControl: %w", err)
 	}
 
 	return nil

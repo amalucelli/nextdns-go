@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-
-	"github.com/pkg/errors"
 )
 
 // settingsBlockPageAPIPath is the HTTP path for the settings block page API.
@@ -58,13 +56,13 @@ func (s *settingsBlockPageService) Get(ctx context.Context, request *GetSettings
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), settingsBlockPageAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
-		return nil, errors.Wrap(err, "error creating request to get the block page settings")
+		return nil, fmt.Errorf("error creating request to get the block page settings: %w", err)
 	}
 
 	response := settingsBlockPageResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return nil, errors.Wrap(err, "error making a request to get the block page settings")
+		return nil, fmt.Errorf("error making a request to get the block page settings: %w", err)
 	}
 
 	return response.SettingsBlockPage, nil
@@ -75,13 +73,13 @@ func (s *settingsBlockPageService) Update(ctx context.Context, request *UpdateSe
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), settingsBlockPageAPIPath)
 	req, err := s.client.newRequest(http.MethodPatch, path, request.SettingsBlockPage)
 	if err != nil {
-		return errors.Wrap(err, "error creating request to update the block page settings")
+		return fmt.Errorf("error creating request to update the block page settings: %w", err)
 	}
 
 	response := settingsBlockPageResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return errors.Wrap(err, "error making a request to update the block page settings")
+		return fmt.Errorf("error making a request to update the block page settings: %w", err)
 	}
 
 	return nil

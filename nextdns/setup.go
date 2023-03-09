@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-
-	"github.com/pkg/errors"
 )
 
 // setupAPIPath is the HTTP path for the setup API.
@@ -54,13 +52,13 @@ func (s *setupService) Get(ctx context.Context, request *GetSetupRequest) (*Setu
 	path := fmt.Sprintf("%s/%s", profileAPIPath(request.ProfileID), setupAPIPath)
 	req, err := s.client.newRequest(http.MethodGet, path, nil)
 	if err != nil {
-		return nil, errors.Wrap(err, "error creating request to get the setup settings")
+		return nil, fmt.Errorf("error creating request to get the setup settings: %w", err)
 	}
 
 	response := setupResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return nil, errors.Wrap(err, "error making a request to get the setup settings")
+		return nil, fmt.Errorf("error making a request to get the setup settings: %w", err)
 	}
 
 	return response.Setup, nil
