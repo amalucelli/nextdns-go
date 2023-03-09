@@ -19,3 +19,9 @@ linters:
   - staticcheck
   disable:
   - structcheck
+
+linters-settings:
+  depguard:
+    list-type: 'denylist'
+    packages-with-error-message:
+      - 'github.com/pkg/errors': 'the github.com/pkg/errors is deprecated, use stdlib instead'

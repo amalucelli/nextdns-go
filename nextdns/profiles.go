@@ -110,13 +110,13 @@ func NewProfilesService(client *Client) *profilesService {
 func (s *profilesService) List(ctx context.Context, request *ListProfileRequest) ([]*Profiles, error) {
 	req, err := s.client.newRequest(http.MethodGet, profilesAPIPath, nil)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request to list the profiles")
+		return nil, fmt.Errorf("error creating request to list the profiles: %w", err)
 	}
 
 	response := profilesResponse{}
 	err = s.client.do(ctx, req, &response)
 	if err != nil {
-		return nil, fmt.Errorf("error making a request to list the profiles")
+		return nil, fmt.Errorf("error making a request to list the profiles: %w", err)
 	}
 
 	return response.Profiles, nil
