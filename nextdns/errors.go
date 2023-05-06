@@ -16,6 +16,8 @@ const (
 	errResponseError        = "response error received"
 	errMalformedError       = "malformed response body received"
 	errMalformedErrorBody   = "malformed error response body received"
+	errDoingRequest         = "error doing request"
+	errMakingRequest        = "error building request"
 )
 
 const (

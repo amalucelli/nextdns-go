@@ -12,6 +12,8 @@ import (
 	"strings"
 
 	"github.com/hashicorp/go-cleanhttp"
+
+	"github.com/google/go-querystring/query"
 )
 
 const (
@@ -24,6 +26,9 @@ const (
 type Client struct {
 	client  *http.Client
 	baseURL *url.URL
+
+	// Service for the Analytics.
+	Analytics AnalyticsService
 
 	// Service for the Profile.
 	Profiles ProfilesService
@@ -135,6 +140,9 @@ func New(opts ...ClientOption) (*Client, error) {
 		}
 	}
 
+	// Initialize the services for the Analytics.
+	c.Analytics = NewAnalyticsService(c)
+
 	// Initialize the services for the Profile.
 	c.Profiles = NewProfilesService(c)
 
@@ -207,7 +215,7 @@ func (c *Client) handleResponse(ctx context.Context, res *http.Response, v inter
 		return nil
 	}
 
-	// Sets some default additional informations that can be used by the client to debug the error.
+	// Sets some default additional information that can be used by the client to debug the error.
 	meta := map[string]string{
 		"body":        string(out),
 		"http_status": http.StatusText(res.StatusCode),
@@ -343,4 +351,10 @@ type authTransport struct {
 func (t *authTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	req.Header.Add("X-Api-Key", t.apiKey)
 	return t.rt.RoundTrip(req)
+}
+
+// buildURI assembles the base path and queries.
+func buildURI(path string, options interface{}) string {
+	v, _ := query.Values(options)
+	return (&url.URL{Path: path, RawQuery: v.Encode()}).String()
 }

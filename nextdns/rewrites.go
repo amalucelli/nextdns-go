@@ -41,7 +41,7 @@ type RewritesService interface {
 	Delete(context.Context, *DeleteRewritesRequest) error
 }
 
-// rewritesResponse represents the rewrites response.
+// rewritesResponse represents the rewrites' response.
 type rewritesResponse struct {
 	Rewrites []*Rewrites `json:"data"`
 }
