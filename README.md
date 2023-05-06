@@ -20,7 +20,8 @@ The [official API documentation](https://nextdns.github.io/api/) was the base do
 APIs supported by this package:
 
 - [x] Profile (`/profiles` and `/profiles/:profile`)
-- [ ] Analytics (`/profiles/:profile/analytics`)
+- [x] Analytics (`/profiles/:profile/analytics`)
+  - [ ] Time Series [docs](https://nextdns.github.io/api/#time-series)
 - [ ] Logs (`/profiles/:profile/logs`)
 
 ## Usage

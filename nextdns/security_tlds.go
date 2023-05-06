@@ -9,7 +9,7 @@ import (
 // securityTldsAPIPath is the HTTP path for the security TLDs API.
 const securityTldsAPIPath = "security/tlds"
 
-// Allowlist represents the security TLDs of a profile.
+// SecurityTlds represents the security TLDs of a profile.
 type SecurityTlds struct {
 	ID string `json:"id"`
 }
