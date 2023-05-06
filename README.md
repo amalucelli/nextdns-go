@@ -21,6 +21,7 @@ APIs supported by this package:
 
 - [x] Profile (`/profiles` and `/profiles/:profile`)
 - [x] Analytics (`/profiles/:profile/analytics`)
+  - [ ] Time Series [docs](https://nextdns.github.io/api/#time-series)
 - [ ] Logs (`/profiles/:profile/logs`)
 
 ## Usage
